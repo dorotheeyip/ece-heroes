@@ -3,8 +3,15 @@
 void combinaison_ligne(int x, int y, int tab1[25][45]){
     int i, j, item_supprime; 
     for(i=0; i<25; i++){
-        if(tab1[i][j]==tab1[i][j+1] && tab1[i][j+1]==tab1[i][j+2] && tab1[i][j+2]==tab1[i][j+3] && tab1[i][j+3]==tab1[i][j+4] && tab1[i][j+4]==tab1[i][j+5]){              
+        if(tab1[i][j]==tab1[i][j+1] && tab1[i][j+1]==tab1[i][j+2] && tab1[i][j+2]==tab1[i][j+3] && tab1[i][j+3]==tab1[i][j+4] && tab1[i][j+4]==tab1[i][j+5]){
             item_supprime=tab1[i][j];
+            for(i=0; i<25; i++){
+                for(j=0; j<45; j++){
+                    if(tab1[i][j]==item_supprime){
+                        tab1[i][j]=0;
+                    }
+                }
+            }              
         }
         for(j=0; j<45; j++){
             if(tab1[i][j]==item_supprime){
