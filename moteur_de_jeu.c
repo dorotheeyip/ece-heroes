@@ -1,12 +1,17 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(){
     int i, j;
+    int tab1[25][45];
     for(i=0; i<25; i++){
         for(j=0; j<45; j++){
-            int tab1[25][45]=1 + rand() % (5);
+            tab1[i][j]=1 + rand() % (5);
+            printf("%d ", tab1[i][j]);
         }
+        printf("\n");
     }
+    return 0;
 }
 void combinaison_ligne(int x, int y, int tab1[25][45]){
     int i, j, item_supprime=-1; 
