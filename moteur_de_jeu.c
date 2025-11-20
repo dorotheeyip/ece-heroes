@@ -1,18 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main(){
     int i, j;
     int tab1[25][45];
+    srand(time(NULL));
     for(i=0; i<25; i++){
         for(j=0; j<45; j++){
             tab1[i][j]=1 + rand() % (5);
-            printf("%d ", tab1[i][j]);
+        }
+    }
+    for(i=0; i<25; i++){
+        for(j=0; j<45; j++){
+            printf("%d", tab1[i][j]);
         }
         printf("\n");
     }
     return 0;
 }
+
 void combinaison_ligne(int x, int y, int tab1[25][45]){
     int i, j, item_supprime=-1; 
     for(i=0; i<25; i++){
