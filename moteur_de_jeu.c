@@ -13,7 +13,7 @@ int main(){
     }
     for(i=0; i<25; i++){
         for(j=0; j<45; j++){
-            printf("%d", tab1[i][j]);
+            printf("%d ", tab1[i][j]);
         }
         printf("\n");
     }
