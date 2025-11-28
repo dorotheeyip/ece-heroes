@@ -3,8 +3,8 @@
 #include <time.h>
 #include <windows.h>
 
-#define LINES 10    
-#define COLUMN 15
+#define LINES 7   
+#define COLUMN 10
 
 // Active les couleurs ANSI sous Windows
 void activer_couleurs() {
@@ -13,20 +13,29 @@ void activer_couleurs() {
 }
 
 void afficher_tab_symboles(int tab1[LINES][COLUMN]) {
+
+    printf("\x1b[H");   // revient en haut sans effacer tout
+                        // garde un écran stable 10×15
+
     for (int i = 0; i < LINES; i++) {
         for (int j = 0; j < COLUMN; j++) {
+
             char symbole;
+            char *couleur;
+
             switch (tab1[i][j]) {
-                case 1: symbole = '*'; break;
-                case 2: symbole = '^'; break;
-                case 3: symbole = '&'; break;
-                case 4: symbole = '+'; break;
-                case 5: symbole = '%'; break;
-                case 0: symbole = ' '; break;
-                default: symbole = '?'; break;
+                case 1: symbole = '*'; couleur = "\x1b[31m"; break;
+                case 2: symbole = '^'; couleur = "\x1b[32m"; break;
+                case 3: symbole = '&'; couleur = "\x1b[33m"; break;
+                case 4: symbole = '+'; couleur = "\x1b[34m"; break;
+                case 5: symbole = '%'; couleur = "\x1b[35m"; break;
+                case 0: symbole = ' '; couleur = "\x1b[0m";  break;
+                default: symbole = '?'; couleur = "\x1b[0m"; break;
             }
-            printf("%c ", symbole); // Chaque cellule occupe exactement 2 caractères
+
+            printf("%s%c\x1b[0m ", couleur, symbole);
         }
+
         printf("\n");
     }
 }
@@ -100,7 +109,6 @@ void combinaison_ligne(int tab1[LINES][COLUMN]){
             item_supprime=-1;
         }
     }
-    printf("\x1b[2J"); // nettoie l'écran
     printf("\x1b[H");  // place le curseur en haut
     afficher_tab_symboles(tab1);
 }
@@ -125,7 +133,6 @@ void combinaison_colonne(int tab1[LINES][COLUMN]){
             item_supprime=-1;
         }
     }
-    printf("\x1b[2J"); // nettoie l'écran
     printf("\x1b[H");  // place le curseur en haut
     afficher_tab_symboles(tab1);
 }
@@ -159,35 +166,86 @@ void combinaison_carre(int tab1[LINES][COLUMN]){
             }
         }
     }
-    printf("\x1b[2J"); // nettoie l'écran
     printf("\x1b[H");  // place le curseur en haut
     afficher_tab_symboles(tab1);
 }
 
-void renouvellement_case(int tab1[LINES][COLUMN]){
-    int remplace;
-    int i, j, k;
+void afficher_et_pause(int tab1[LINES][COLUMN], int temps) {
+    printf("\x1b[H");
+    afficher_tab_symboles(tab1);
+    Sleep(temps);
+}
 
-    /* faire tomber tous les zéros */
+void renouvellement_case(int tab1[LINES][COLUMN]) {
+    int remplace;
+    int i, j;
+
+    // -------------------------------------------
+    // 1) ANIMATION DE LA CHUTE DES PIÈCES EXISTANTES
+    // -------------------------------------------
+
     do {
         remplace = 0;
+
         for (j = 0; j < COLUMN; j++) {
-            for (i = LINES-1; i > 0; i--) {
-                if (tab1[i][j] == 0 && tab1[i-1][j] != 0) {
-                    tab1[i][j] = tab1[i-1][j];
-                    tab1[i-1][j] = 0;
+            for (i = LINES - 1; i > 0; i--) {
+
+                // Une pièce peut descendre d'une case
+                if (tab1[i][j] == 0 && tab1[i - 1][j] != 0) {
+
+                    // ÉCHANGE
+                    tab1[i][j] = tab1[i - 1][j];
+                    tab1[i - 1][j] = 0;
                     remplace = 1;
+
+                    // ANIMATION : afficher après chaque mouvement
+                    printf("\x1b[H");
+                    afficher_tab_symboles(tab1);
+                    Sleep(40);  // vitesse de chute
                 }
             }
         }
+
     } while (remplace);
 
-    /* remplir le haut */
+
+    // -------------------------------------------
+    // 2) ANIMATION DES NOUVELLES PIÈCES QUI ARRIVENT DU HAUT
+    // -------------------------------------------
+
     for (j = 0; j < COLUMN; j++) {
+
         for (i = 0; i < LINES; i++) {
+
             if (tab1[i][j] == 0) {
-                tab1[i][j] = 1 + rand() % 5;
+                int nouvelle_piece = 1 + rand() % 5;
+
+                // Chute animée depuis "au-dessus"
+                for (int h = 0; h <= i; h++) {
+
+                    // effacer la case temporaire précédente
+                    if (h > 0) tab1[h - 1][j] = 0;
+
+                    // placer temporairement la pièce
+                    tab1[h][j] = nouvelle_piece;
+
+                    // afficher
+                    printf("\x1b[H");
+                    afficher_tab_symboles(tab1);
+                    Sleep(30);
+
+                    // si pas encore arrivée → la retirer avant la prochaine frame
+                    if (h != i)
+                        tab1[h][j] = 0;
+                }
+
+                // finalement la placer
+                tab1[i][j] = nouvelle_piece;
             }
         }
     }
+
+    // AFFICHAGE FINAL
+    printf("\x1b[H");
+    afficher_tab_symboles(tab1);
 }
