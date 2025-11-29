@@ -235,8 +235,6 @@ void renouvellement_case(int plateau[LINE][COLUMN]) {
 
 
 
-
-
 void activer_couleurs(){
     // Active les couleurs des symboles ANSI sous Windows
 }
