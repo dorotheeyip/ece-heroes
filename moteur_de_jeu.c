@@ -232,3 +232,18 @@ void renouvellement_case(int tab1[LINE][COLUMN]) {
     printf("\x1b[H");
     afficher_tab_symboles(tab1);
 }
+
+
+
+
+
+// Active les couleurs ANSI sous Windows
+void activer_couleurs(){
+}
+
+void afficher_tab_symboles(int tab1[LINE][COLUMN]){
+}
+
+void afficher_tab(int tab1[LINE][COLUMN]){
+}
+
