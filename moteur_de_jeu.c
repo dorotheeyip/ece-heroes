@@ -3,7 +3,7 @@
 #include <time.h>
 #include <windows.h>
 
-#define LINES 7   
+#define LINE 7   
 #define COLUMN 10
 
 // Active les couleurs ANSI sous Windows
@@ -12,12 +12,12 @@ void activer_couleurs() {
     // PowerShell et CMD récents activent ANSI automatiquement
 }
 
-void afficher_tab_symboles(int tab1[LINES][COLUMN]) {
+void afficher_tab_symboles(int tab1[LINE][COLUMN]) {
 
     printf("\x1b[H");   // revient en haut sans effacer tout
                         // garde un écran stable 10×15
 
-    for (int i = 0; i < LINES; i++) {
+    for (int i = 0; i < LINE; i++) {
         for (int j = 0; j < COLUMN; j++) {
 
             char symbole;
@@ -40,17 +40,17 @@ void afficher_tab_symboles(int tab1[LINES][COLUMN]) {
     }
 }
 
-void combinaison_ligne(int tab1[LINES][COLUMN]);
-void combinaison_colonne(int tab1[LINES][COLUMN]);
-void combinaison_carre(int tab1[LINES][COLUMN]);
-void renouvellement_case(int tab1[LINES][COLUMN]);
-void afficher_tab(int tab1[LINES][COLUMN]);
+void combinaison_ligne(int tab1[LINE][COLUMN]);
+void combinaison_colonne(int tab1[LINE][COLUMN]);
+void combinaison_carre(int tab1[LINE][COLUMN]);
+void renouvellement_case(int tab1[LINE][COLUMN]);
+void afficher_tab(int tab1[LINE][COLUMN]);
 
 int main(){
     int i, j;
-    int tab1[LINES][COLUMN];
+    int tab1[LINE][COLUMN];
     srand(time(NULL));
-    for (i=0; i<LINES; i++) {
+    for (i=0; i<LINE; i++) {
         for (j=0; j<COLUMN; j++) {
             tab1[i][j] = 1 + rand() % 5;
         }
@@ -80,8 +80,8 @@ int main(){
     return 0;
 }
 
-void afficher_tab(int tab1[LINES][COLUMN]){
-    for (int i = 0; i < LINES; i++) {
+void afficher_tab(int tab1[LINE][COLUMN]){
+    for (int i = 0; i < LINE; i++) {
         for (int j = 0; j < COLUMN; j++) {
             printf("%d ", tab1[i][j]);
         }
@@ -89,58 +89,41 @@ void afficher_tab(int tab1[LINES][COLUMN]){
     }
 }
 
-void combinaison_ligne(int tab1[LINES][COLUMN]){
-    int i, j, item_supprime=-1; 
-    for(i=0; i<LINES; i++){
+void combinaison_ligne(int tab1[LINE][COLUMN]){
+    int i, j, k; 
+    for(i=0; i<LINE; i++){
         for(j=0; j<COLUMN-5; j++){
             if(tab1[i][j]==tab1[i][j+1] && tab1[i][j+1]==tab1[i][j+2] && tab1[i][j+2]==tab1[i][j+3] && tab1[i][j+3]==tab1[i][j+4] && tab1[i][j+4]==tab1[i][j+5]){              
-                item_supprime=tab1[i][j];
-            }
-        }
-        if(item_supprime!=-1){
-            int k, l;
-            for(k=0; k<LINES; k++){
-                for(l=0; l<COLUMN; l++){
-                    if(tab1[k][l]==item_supprime){
-                        tab1[k][l]=0;
-                    }
+                for(k=0; k<6; k++){
+                    tab1[i][j+k]=0;
                 }
             }
-            item_supprime=-1;
         }
+       
     }
     printf("\x1b[H");  // place le curseur en haut
     afficher_tab_symboles(tab1);
 }
 
-void combinaison_colonne(int tab1[LINES][COLUMN]){
-    int i, j, item_supprime=-1; 
+void combinaison_colonne(int tab1[LINE][COLUMN]){
+    int i, j, k; 
     for(j=0; j<COLUMN; j++){
-        for(i=0; i<LINES-5; i++){
+        for(i=0; i<LINE-5; i++){
             if(tab1[i][j]==tab1[i+1][j] && tab1[i+1][j]==tab1[i+2][j] && tab1[i+2][j]==tab1[i+3][j] && tab1[i+3][j]==tab1[i+4][j] && tab1[i+4][j]==tab1[i+5][j]){              
-                item_supprime=tab1[i][j];
-            }
-        }
-        if(item_supprime!=-1){
-            int k, l;
-            for(l=0; l<COLUMN; l++){
-                for(k=0; k<LINES; k++){
-                    if(tab1[k][l]==item_supprime){
-                        tab1[k][l]=0;
-                    }
+                for(k=0; k<6; k++){
+                    tab1[i][j+k]=0;
                 }
             }
-            item_supprime=-1;
         }
-    }
     printf("\x1b[H");  // place le curseur en haut
     afficher_tab_symboles(tab1);
+    }
 }
 
-void combinaison_carre(int tab1[LINES][COLUMN]){
+void combinaison_carre(int tab1[LINE][COLUMN]){
     int i, j, k, l;
     int cote_gauche, cote_droit, cote_haut, cote_bas;
-    for(i=0; i<LINES-3; i++){
+    for(i=0; i<LINE-3; i++){
         for(j=0; j<COLUMN-3; j++){
             if(tab1[i][j] == tab1[i+1][j] && tab1[i+1][j] == tab1[i+2][j] && tab1[i+2][j] == tab1[i+3][j] &&
                tab1[i][j+3] == tab1[i+1][j+3] && tab1[i+1][j+3] == tab1[i+2][j+3] && tab1[i+2][j+3] == tab1[i+3][j+3] &&
@@ -170,13 +153,13 @@ void combinaison_carre(int tab1[LINES][COLUMN]){
     afficher_tab_symboles(tab1);
 }
 
-void afficher_et_pause(int tab1[LINES][COLUMN], int temps) {
+void afficher_et_pause(int tab1[LINE][COLUMN], int temps) {
     printf("\x1b[H");
     afficher_tab_symboles(tab1);
     Sleep(temps);
 }
 
-void renouvellement_case(int tab1[LINES][COLUMN]) {
+void renouvellement_case(int tab1[LINE][COLUMN]) {
     int remplace;
     int i, j;
 
@@ -188,7 +171,7 @@ void renouvellement_case(int tab1[LINES][COLUMN]) {
         remplace = 0;
 
         for (j = 0; j < COLUMN; j++) {
-            for (i = LINES - 1; i > 0; i--) {
+            for (i = LINE - 1; i > 0; i--) {
 
                 // Une pièce peut descendre d'une case
                 if (tab1[i][j] == 0 && tab1[i - 1][j] != 0) {
@@ -215,7 +198,7 @@ void renouvellement_case(int tab1[LINES][COLUMN]) {
 
     for (j = 0; j < COLUMN; j++) {
 
-        for (i = 0; i < LINES; i++) {
+        for (i = 0; i < LINE; i++) {
 
             if (tab1[i][j] == 0) {
                 int nouvelle_piece = 1 + rand() % 5;
