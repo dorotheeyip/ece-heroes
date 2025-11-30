@@ -111,7 +111,7 @@ void combinaison_colonne_6(int plateau[LINE][COLUMN]){
         for(i=0; i<LINE-5; i++){
             if(plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j] && plateau[i+3][j]==plateau[i+4][j] && plateau[i+4][j]==plateau[i+5][j]){              
                 for(k=0; k<6; k++){
-                    plateau[i][j+k]=0;
+                    plateau[i+k][j]=0;
                 }
             }
         }
@@ -153,13 +153,7 @@ void combinaison_carre(int plateau[LINE][COLUMN]){
     afficher_tab_symboles(plateau);
 }
 
-void afficher_et_pause(int plateau[LINE][COLUMN], int temps) {
-    printf("\x1b[H");
-    afficher_tab_symboles(plateau);
-    Sleep(temps);
-}
-
-void renouvellement_case(int plateau[LINE][COLUMN]) {
+void renouvellement_case(int plateau[LINE][COLUMN]){
     int remplace;
     int i, j;
 
@@ -248,5 +242,32 @@ void afficher_tab(int plateau[LINE][COLUMN]){
 }
 
 void combinaison_ligne_6(int plateau[LINE][COLUMN]){
-    // Identifie les combinaisons de lignes de 6 items et les supprime
+    // Identifie les combinaisons de lignes de 6 items identiques et les supprime
+}
+
+
+void combinaison_colonne_6(int plateau[LINE][COLUMN]){
+    // Identifie les combinaisons de colonnes de 6 items identiques et les supprime
+}
+
+void combinaison_croix(int plateau[LINE][COLUMN]){
+    // Identifie les combinaisons en croix de 9 items identiques et les supprime
+}
+
+void combinaison_carre(int plateau[LINE][COLUMN]){
+    // Identifie les combinaisons de carré de 4*4 items identiques et les supprime
+}
+
+void combinaison_ligne_4(int plateau[LINE][COLUMN]){
+    // Identifie les combinaisons de lignes de 4 items identiques et les supprime
+}
+
+
+
+void combinaison_colonne_4(int plateau[LINE][COLUMN]){
+    // Identifie les combinaisons de colonnes de 4 items identiques et les supprime
+}
+
+void renouvellement_case(int plateau[LINE][COLUMN]){
+    // Descente des items au dessus des cases vides, puis remplie les cases vides par de nouveaux items (aléatoire)
 }
