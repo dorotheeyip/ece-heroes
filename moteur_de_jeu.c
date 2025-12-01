@@ -24,11 +24,11 @@ void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
             char *couleur;
 
             switch (plateau[i][j]) {
-                case 1: symbole = '*'; couleur = "\x1b[31m"; break;
-                case 2: symbole = '^'; couleur = "\x1b[32m"; break;
-                case 3: symbole = '&'; couleur = "\x1b[33m"; break;
-                case 4: symbole = '+'; couleur = "\x1b[34m"; break;
-                case 5: symbole = '%'; couleur = "\x1b[35m"; break;
+                case 2: symbole = '*'; couleur = "\x1b[31m"; break;
+                case 3: symbole = '^'; couleur = "\x1b[32m"; break;
+                case 4: symbole = '&'; couleur = "\x1b[33m"; break;
+                case 5: symbole = '+'; couleur = "\x1b[34m"; break;
+                case 6: symbole = '%'; couleur = "\x1b[35m"; break;
                 case 0: symbole = ' '; couleur = "\x1b[0m";  break;
                 default: symbole = '?'; couleur = "\x1b[0m"; break;
             }
@@ -52,7 +52,7 @@ int main(){
     srand(time(NULL));
     for (i=0; i<LINE; i++) {
         for (j=0; j<COLUMN; j++) {
-            plateau[i][j] = 1 + rand() % 5;
+            plateau[i][j] = 2 + rand() % (5);
         }
     }
     printf("\x1b[2J"); // efface tout
@@ -95,7 +95,7 @@ void combinaison_ligne_6(int plateau[LINE][COLUMN]){
         for(j=0; j<COLUMN-5; j++){
             if(plateau[i][j]==plateau[i][j+1] && plateau[i][j+1]==plateau[i][j+2] && plateau[i][j+2]==plateau[i][j+3] && plateau[i][j+3]==plateau[i][j+4] && plateau[i][j+4]==plateau[i][j+5]){              
                 for(k=0; k<6; k++){
-                    plateau[i][j+k]=0;
+                    plateau[i][j+k]=1;
                 }
             }
         }
@@ -111,7 +111,7 @@ void combinaison_colonne_6(int plateau[LINE][COLUMN]){
         for(i=0; i<LINE-5; i++){
             if(plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j] && plateau[i+3][j]==plateau[i+4][j] && plateau[i+4][j]==plateau[i+5][j]){              
                 for(k=0; k<6; k++){
-                    plateau[i+k][j]=0;
+                    plateau[i+k][j]=1;
                 }
             }
         }
@@ -125,7 +125,7 @@ void combinaision_croix(int plateau[LINE][COLUMN]){
     int ligne, colonne;
     for(i=0; i<LINE-2; i++){
         for(j=0; j<COLUMN-2; j++){
-            if(plateau[i][j]==plateau[i-2][j] && plateau[i-1][j])
+            if(plateau[i][j]==plateau[i-2][j] && plateau[i-2][j]==plateau[i-1][j] && plateau[i-1][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i][j-2] && plateau[i][j-2]==plateau[i][j-1] &&)
         }
     }
 }
@@ -144,15 +144,15 @@ void combinaison_carre(int plateau[LINE][COLUMN]){
                 cote_haut=plateau[i][j];
                 cote_bas=plateau[i+3][j];
                 for(k=0; k<4; k++){
-                    plateau[i+k][j]=0;
-                    plateau[i+k][j+3]=0;
-                    plateau[i][j+k]=0;
-                    plateau[i+3][j+k]=0;
+                    plateau[i+k][j]=1;
+                    plateau[i+k][j+3]=1;
+                    plateau[i][j+k]=1;
+                    plateau[i+3][j+k]=1;
                 }
                 for(k=i+1; k<i+3; k++){
                     for(l=j+1; l<j+3; l++){
                         if(plateau[k][l]==cote_gauche || plateau[k][l]==cote_droit || plateau[k][l]==cote_haut || plateau[k][l]==cote_bas){
-                            plateau[k][l]=0;
+                            plateau[k][l]=1;
                         }
                     }
                 }
