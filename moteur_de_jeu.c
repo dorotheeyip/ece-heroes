@@ -120,6 +120,16 @@ void combinaison_colonne_6(int plateau[LINE][COLUMN]){
     }
 }
 
+void combinaision_croix(int plateau[LINE][COLUMN]){
+    int i, j;
+    int ligne, colonne;
+    for(i=0; i<LINE-2; i++){
+        for(j=0; j<COLUMN-2; j++){
+            if(plateau[i][j]==plateau[i-2][j] && plateau[i-1][j])
+        }
+    }
+}
+
 void combinaison_carre(int plateau[LINE][COLUMN]){
     int i, j, k, l;
     int cote_gauche, cote_droit, cote_haut, cote_bas;
