@@ -42,7 +42,11 @@ void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
 
 int combinaison_ligne_6(int plateau[LINE][COLUMN]);
 int combinaison_colonne_6(int plateau[LINE][COLUMN]);
+int combinaison_croix(int plateau[LINE][COLUMN]);
 int combinaison_carre(int plateau[LINE][COLUMN]);
+int combinaison_ligne_4(int plateau[LINE][COLUMN]);
+int combinaison_colonne_4(int plateau[LINE][COLUMN]);
+void supprime_combin(int plateau[LINE][COLUMN]);
 void renouvellement_case(int plateau[LINE][COLUMN]);
 void afficher_tab(int plateau[LINE][COLUMN]);
 
@@ -58,25 +62,15 @@ int main(){
     printf("\x1b[2J"); // efface tout
     afficher_tab_symboles(plateau);
     Sleep(500);
-
     combinaison_ligne_6(plateau);
-    renouvellement_case(plateau);
-    printf("\x1b[H");
-    afficher_tab_symboles(plateau);
-    Sleep(200);
-
     combinaison_colonne_6(plateau);
-    renouvellement_case(plateau);
-    printf("\x1b[H");
-    afficher_tab_symboles(plateau);
-    Sleep(200);
-
+    combinaison_croix(plateau);
     combinaison_carre(plateau);
+    supprime_combin(plateau);
     renouvellement_case(plateau);
     printf("\x1b[H");
     afficher_tab_symboles(plateau);
     Sleep(200);
-
     return 0;
 }
 
@@ -175,12 +169,12 @@ int combinaison_colonne_4(int plateau[LINE][COLUMN]){
 
 void supprime_combin(int plateau[LINE][COLUMN]){
     int i, j, ligne_6, colonne_6, centre, ligne_4, colonne_4;
-    if(combinaison_ligne_6){
+    if(combinaison_ligne_6(plateau)){
         for(i=0; i<LINE; i++){
             for(j=0; j<COLUMN-5; j++){
                 ligne_6=plateau[i][j];
                 if(ligne_6==plateau[i][j+1] && ligne_6==plateau[i][j+2] && ligne_6==plateau[i][j+3] && ligne_6==plateau[i][j+4] && ligne_6==plateau[i][j+5]){
-                    ligne_6=0;
+                    plateau[i][j]=0;
                     plateau[i][j+1]=0;
                     plateau[i][j+2]=0;
                     plateau[i][j+3]=0;
@@ -190,12 +184,12 @@ void supprime_combin(int plateau[LINE][COLUMN]){
             }
         }
     }
-    if(combinaison_colonne_6){
+    if(combinaison_colonne_6(plateau)){
         for(i=0; i<LINE; i++){
             for(j=0; j<COLUMN-5; j++){
                 colonne_6=plateau[i][j];
                 if(colonne_6==plateau[i+1][j] && colonne_6==plateau[i+2][j] && colonne_6==plateau[i+3][j] && colonne_6==plateau[i+4][j] && colonne_6==plateau[i+5][j]){
-                    colonne_6=0;
+                    plateau[i][j]=0;
                     plateau[i+1][j]=0;
                     plateau[i+2][j]=0;
                     plateau[i+3][j]=0;
@@ -205,12 +199,12 @@ void supprime_combin(int plateau[LINE][COLUMN]){
             }
         }
     }
-    if(combinaison_croix){
+    if(combinaison_croix(plateau)){
         for(i=2; i<LINE-2; i++){
             for(j=2; j<COLUMN-2; j++){
                 centre=plateau[i][j];
                 if(centre==plateau[i-2][j] && centre==plateau[i-1][j] && centre==plateau[i+1][j] && centre==plateau[i+2][j] && centre==plateau[i][j-2] && centre==plateau[i][j-1] && centre==plateau[i][j+1] && centre==plateau[i][j+2]){
-                    centre=0;
+                    plateau[i][j]=0;
                     plateau[i-2][j]=0;
                     plateau[i-1][j]=0;
                     plateau[i+1][j]=0;
@@ -223,7 +217,7 @@ void supprime_combin(int plateau[LINE][COLUMN]){
             }
         }
     }
-    if(combinaison_carre){
+    if(combinaison_carre(plateau)){
         for(i=0; i<LINE-3; i++){
             for(j=0; j<COLUMN-3; j++){
                 if(plateau[i][j] == plateau[i+1][j] && plateau[i+1][j] == plateau[i+2][j] && plateau[i+2][j] == plateau[i+3][j] &&
@@ -246,12 +240,12 @@ void supprime_combin(int plateau[LINE][COLUMN]){
             }
         }
     }
-    if(combinaison_ligne_4){
+    if(combinaison_ligne_4(plateau)){
         for(i=0; i<LINE; i++){
             for(j=0; j<COLUMN-3; j++){
                 ligne_4=plateau[i][j];
                 if(ligne_4==plateau[i][j+1] && ligne_4==plateau[i][j+2] && ligne_4==plateau[i][j+3]){
-                    ligne_4=0;
+                    plateau[i][j]=0;
                     plateau[i][j+1]=0;
                     plateau[i][j+2]=0;
                     plateau[i][j+3]=0;
@@ -259,20 +253,15 @@ void supprime_combin(int plateau[LINE][COLUMN]){
             }
         }
     }
-    if(combinaison_colonne_4){
+    if(combinaison_colonne_4(plateau)){
         for(i=0; i<LINE-3; i++){
             for(j=0; j<COLUMN; j++){
                 colonne_4=plateau[i][j];
-                if(colonne_4==plateau[i-2][j] && colonne_4==plateau[i-1][j] && colonne_4==plateau[i+1][j] && colonne_4==plateau[i+2][j] && colonne_4==plateau[i][j-2] && colonne_4==plateau[i][j-1] && colonne_4==plateau[i][j+1] && colonne_4==plateau[i][j+2]){
-                    centre=0;
-                    plateau[i-2][j]=0;
-                    plateau[i-1][j]=0;
+                if(colonne_4==plateau[i+1][j] && colonne_4==plateau[i+2][j] && colonne_4==plateau[i+3][j]){
+                    plateau[i][j]=0;
                     plateau[i+1][j]=0;
                     plateau[i+2][j]=0;
-                    plateau[i][j-2]=0;
-                    plateau[i][j-1]=0;
-                    plateau[i][j+1]=0;
-                    plateau[i][j+2]=0;
+                    plateau[i+3][j]=0;
                 }
             }
         }
@@ -304,7 +293,7 @@ void renouvellement_case(int plateau[LINE][COLUMN]){
                     // ANIMATION : afficher après chaque mouvement
                     printf("\x1b[H");
                     afficher_tab_symboles(plateau);
-                    Sleep(40);  // vitesse de chute
+                    Sleep(1000);  // vitesse de chute
                 }
             }
         }
@@ -321,7 +310,7 @@ void renouvellement_case(int plateau[LINE][COLUMN]){
         for (i = 0; i < LINE; i++) {
 
             if (plateau[i][j] == 0) {
-                int nouvelle_piece = 1 + rand() % 5;
+                int nouvelle_piece = 2 + rand() % (5);;
 
                 // Chute animée depuis "au-dessus"
                 for (int h = 0; h <= i; h++) {
@@ -335,7 +324,7 @@ void renouvellement_case(int plateau[LINE][COLUMN]){
                     // afficher
                     printf("\x1b[H");
                     afficher_tab_symboles(plateau);
-                    Sleep(30);
+                    Sleep(1000);
 
                     // si pas encore arrivée → la retirer avant la prochaine frame
                     if (h != i)
