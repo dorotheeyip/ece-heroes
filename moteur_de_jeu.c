@@ -40,9 +40,9 @@ void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
     }
 }
 
-void combinaison_ligne_6(int plateau[LINE][COLUMN]);
-void combinaison_colonne_6(int plateau[LINE][COLUMN]);
-void combinaison_carre(int plateau[LINE][COLUMN]);
+int combinaison_ligne_6(int plateau[LINE][COLUMN]);
+int combinaison_colonne_6(int plateau[LINE][COLUMN]);
+int combinaison_carre(int plateau[LINE][COLUMN]);
 void renouvellement_case(int plateau[LINE][COLUMN]);
 void afficher_tab(int plateau[LINE][COLUMN]);
 
@@ -89,49 +89,48 @@ void afficher_tab(int plateau[LINE][COLUMN]){
     }
 }
 
-void combinaison_ligne_6(int plateau[LINE][COLUMN]){
+int combinaison_ligne_6(int plateau[LINE][COLUMN]){
     int i, j, k; 
     for(i=0; i<LINE; i++){
         for(j=0; j<COLUMN-5; j++){
-            if(plateau[i][j]==plateau[i][j+1] && plateau[i][j+1]==plateau[i][j+2] && plateau[i][j+2]==plateau[i][j+3] && plateau[i][j+3]==plateau[i][j+4] && plateau[i][j+4]==plateau[i][j+5]){              
-                for(k=0; k<6; k++){
-                    plateau[i][j+k]=1;
-                }
+            if(plateau[i][j]!=0 && plateau[i][j]==plateau[i][j+1] && plateau[i][j+1]==plateau[i][j+2] && plateau[i][j+2]==plateau[i][j+3] && plateau[i][j+3]==plateau[i][j+4] && plateau[i][j+4]==plateau[i][j+5]){              
+                    return 1;
             }
         }
-       
     }
-    printf("\x1b[H");  // place le curseur en haut
-    afficher_tab_symboles(plateau);
+    return 0;
 }
 
-void combinaison_colonne_6(int plateau[LINE][COLUMN]){
+int combinaison_colonne_6(int plateau[LINE][COLUMN]){
     int i, j, k; 
     for(j=0; j<COLUMN; j++){
         for(i=0; i<LINE-5; i++){
             if(plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j] && plateau[i+3][j]==plateau[i+4][j] && plateau[i+4][j]==plateau[i+5][j]){              
-                for(k=0; k<6; k++){
-                    plateau[i+k][j]=1;
-                }
+                return 1;
             }
         }
-    printf("\x1b[H");  // place le curseur en haut
-    afficher_tab_symboles(plateau);
     }
+    return 0;
 }
 
-void combinaision_croix(int plateau[LINE][COLUMN]){
-    int i, j;
-    int ligne, colonne;
-    for(i=0; i<LINE-2; i++){
-        for(j=0; j<COLUMN-2; j++){
-            if(plateau[i][j]==plateau[i-2][j] && plateau[i-2][j]==plateau[i-1][j] && plateau[i-1][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i][j-2] && plateau[i][j-2]==plateau[i][j-1] &&)
+int combinaison_croix(int plateau[LINE][COLUMN]){
+    int i, j, centre;
+    for(i=2; i<LINE-2; i++){
+        for(j=2; j<COLUMN-2; j++){
+            centre=plateau[i][j];
+            if(centre==0){
+                continue;
+            }  
+            if(centre==plateau[i-2][j] && centre==plateau[i-1][j] && centre==plateau[i+1][j] && centre==plateau[i+2][j] && centre==plateau[i][j-2] && centre==plateau[i][j-1] && centre==plateau[i][j+1] && centre==plateau[i][j+2]){
+                return 1;
+            }
         }
     }
+    return 0;
 }
 
-void combinaison_carre(int plateau[LINE][COLUMN]){
-    int i, j, k, l;
+int combinaison_carre(int plateau[LINE][COLUMN]){
+    int i, j;
     int cote_gauche, cote_droit, cote_haut, cote_bas;
     for(i=0; i<LINE-3; i++){
         for(j=0; j<COLUMN-3; j++){
@@ -143,24 +142,39 @@ void combinaison_carre(int plateau[LINE][COLUMN]){
                 cote_droit=plateau[i][j+3];
                 cote_haut=plateau[i][j];
                 cote_bas=plateau[i+3][j];
-                for(k=0; k<4; k++){
-                    plateau[i+k][j]=1;
-                    plateau[i+k][j+3]=1;
-                    plateau[i][j+k]=1;
-                    plateau[i+3][j+k]=1;
-                }
-                for(k=i+1; k<i+3; k++){
-                    for(l=j+1; l<j+3; l++){
-                        if(plateau[k][l]==cote_gauche || plateau[k][l]==cote_droit || plateau[k][l]==cote_haut || plateau[k][l]==cote_bas){
-                            plateau[k][l]=1;
-                        }
-                    }
-                }
+                return 1;
             }
         }
     }
-    printf("\x1b[H");  // place le curseur en haut
-    afficher_tab_symboles(plateau);
+    return 0;
+}
+
+int combinaison_ligne_4(int plateau[LINE][COLUMN]){
+    int i, j;
+    for(i=0; i<LINE; i++){
+        for(j=0; j<COLUMN-3; j++){
+            if(plateau[i][j]==plateau[i][j+1] && plateau[i][j+1]==plateau[i][j+2] && plateau[i][j+2]==plateau[i][j+3]){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+int combinaison_colonne_4(int plateau[LINE][COLUMN]){
+    int i, j;
+    for(i=0; i<LINE-3; i++){
+        for(j=0; j<COLUMN; j++){
+            if(plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j]){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void supprime_combin(int plateau[LINE][COLUMN]){
+    int i, j;
 }
 
 void renouvellement_case(int plateau[LINE][COLUMN]){
