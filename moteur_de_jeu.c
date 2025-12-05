@@ -54,23 +54,62 @@ int main(){
     int i, j;
     int plateau[LINE][COLUMN];
     srand(time(NULL));
-    for (i=0; i<LINE; i++) {
-        for (j=0; j<COLUMN; j++) {
-            plateau[i][j] = 2 + rand() % (5);
+
+    // Initialisation du plateau
+    for (i = 0; i < LINE; i++) {
+        for (j = 0; j < COLUMN; j++) {
+            plateau[i][j] = 2 + rand() % 5;
         }
     }
-    printf("\x1b[2J"); // efface tout
+
+    printf("\x1b[2J"); // efface la console
     afficher_tab_symboles(plateau);
     Sleep(500);
-    combinaison_ligne_6(plateau);
-    combinaison_colonne_6(plateau);
-    combinaison_croix(plateau);
-    combinaison_carre(plateau);
+
+    // ---------------------------------------------------------
+    // DÉTECTION DES COMBINAISONS
+    // ---------------------------------------------------------
+    int trouv = 0;
+    if (combinaison_ligne_6(plateau)) trouv = 1;
+    if (combinaison_colonne_6(plateau)) trouv = 1;
+    if (combinaison_croix(plateau)) trouv = 1;
+    if (combinaison_carre(plateau)) trouv = 1;
+    if (combinaison_ligne_4(plateau)) trouv = 1;
+    if (combinaison_colonne_4(plateau)) trouv = 1;
+
+    // ---------------------------------------------------------
+    // AFFICHAGE DES COMBINAISONS AVANT SUPPRESSION
+    // ---------------------------------------------------------
+    if (trouv) {
+        printf("\x1b[H");
+        afficher_tab_symboles(plateau);
+        Sleep(800);   // Permet de voir les combinaisons trouvées
+    }
+
+    // ---------------------------------------------------------
+    // SUPPRESSION DES COMBINAISONS
+    // ---------------------------------------------------------
     supprime_combin(plateau);
-    renouvellement_case(plateau);
+
+    // ---------------------------------------------------------
+    // AFFICHAGE DES VIDES AVANT DESCENTE
+    // ---------------------------------------------------------
     printf("\x1b[H");
     afficher_tab_symboles(plateau);
-    Sleep(200);
+    Sleep(800);  // Tu vois les cases vides
+
+    // ---------------------------------------------------------
+    // ANIMATION DE CHUTE + REMPLISSAGE
+    // ---------------------------------------------------------
+    renouvellement_case(plateau);
+
+    // ---------------------------------------------------------
+    // AFFICHAGE FINAL
+    // ---------------------------------------------------------
+    printf("\x1b[H");
+    afficher_tab_symboles(plateau);
+    Sleep(300);
+
     return 0;
 }
 
@@ -185,8 +224,8 @@ void supprime_combin(int plateau[LINE][COLUMN]){
         }
     }
     if(combinaison_colonne_6(plateau)){
-        for(i=0; i<LINE; i++){
-            for(j=0; j<COLUMN-5; j++){
+        for(i=0; i<LINE-5; i++){
+            for(j=0; j<COLUMN; j++){
                 colonne_6=plateau[i][j];
                 if(colonne_6==plateau[i+1][j] && colonne_6==plateau[i+2][j] && colonne_6==plateau[i+3][j] && colonne_6==plateau[i+4][j] && colonne_6==plateau[i+5][j]){
                     plateau[i][j]=0;
@@ -268,76 +307,87 @@ void supprime_combin(int plateau[LINE][COLUMN]){
     }
 }
 
-void renouvellement_case(int plateau[LINE][COLUMN]){
-    int remplace;
+void renouvellement_case(int plateau[LINE][COLUMN]) {
     int i, j;
 
-    // -------------------------------------------
-    // 1) ANIMATION DE LA CHUTE DES PIÈCES EXISTANTES
-    // -------------------------------------------
+    // --------------------------------------------------------
+    // 1) MONTRER LA DISPARITION (les zéros restent visibles)
+    // --------------------------------------------------------
+    printf("\x1b[H");
+    afficher_tab_symboles(plateau);
+    Sleep(800);
+
+
+    // --------------------------------------------------------
+    // 2) GRAVITÉ ANIMÉE — DESCENTE CASE PAR CASE
+    // --------------------------------------------------------
+    int movement;
 
     do {
-        remplace = 0;
+        movement = 0;
 
         for (j = 0; j < COLUMN; j++) {
+
             for (i = LINE - 1; i > 0; i--) {
 
-                // Une pièce peut descendre d'une case
                 if (plateau[i][j] == 0 && plateau[i - 1][j] != 0) {
 
-                    // ÉCHANGE
                     plateau[i][j] = plateau[i - 1][j];
                     plateau[i - 1][j] = 0;
-                    remplace = 1;
+                    movement = 1;
 
-                    // ANIMATION : afficher après chaque mouvement
                     printf("\x1b[H");
                     afficher_tab_symboles(plateau);
-                    Sleep(1000);  // vitesse de chute
+                    Sleep(120);
                 }
             }
         }
 
-    } while (remplace);
+    } while (movement);
 
 
-    // -------------------------------------------
-    // 2) ANIMATION DES NOUVELLES PIÈCES QUI ARRIVENT DU HAUT
-    // -------------------------------------------
-
+    // --------------------------------------------------------
+    // 3) REMPLISSAGE DES ZÉROS (ANIMATION, CORRIGÉ)
+    //    → on remplit de BAS en HAUT pour éviter les trous
+    // --------------------------------------------------------
     for (j = 0; j < COLUMN; j++) {
 
-        for (i = 0; i < LINE; i++) {
+        for (i = LINE - 1; i >= 0; i--) {
 
             if (plateau[i][j] == 0) {
-                int nouvelle_piece = 2 + rand() % (5);;
 
-                // Chute animée depuis "au-dessus"
-                for (int h = 0; h <= i; h++) {
+                int piece = 2 + rand() % 5;
 
-                    // effacer la case temporaire précédente
-                    if (h > 0) plateau[h - 1][j] = 0;
+                // La pièce tombe depuis au-dessus de la grille
+                for (int h = -1; h <= i; h++) {
 
-                    // placer temporairement la pièce
-                    plateau[h][j] = nouvelle_piece;
+                    // efface l'ancienne position
+                    if (h > 0)
+                        plateau[h - 1][j] = 0;
 
-                    // afficher
+                    // dessine la pièce si dans la grille
+                    if (h >= 0)
+                        plateau[h][j] = piece;
+
                     printf("\x1b[H");
                     afficher_tab_symboles(plateau);
-                    Sleep(1000);
+                    Sleep(120);
 
-                    // si pas encore arrivée → la retirer avant la prochaine frame
-                    if (h != i)
+                    // efface la trace intermédiaire
+                    if (h >= 0 && h != i)
                         plateau[h][j] = 0;
                 }
 
-                // finalement la placer
-                plateau[i][j] = nouvelle_piece;
+                plateau[i][j] = piece; // position finale
             }
         }
     }
 
-    // AFFICHAGE FINAL
+
+    // --------------------------------------------------------
+    // 4) AFFICHAGE FINAL
+    // --------------------------------------------------------
     printf("\x1b[H");
     afficher_tab_symboles(plateau);
+    Sleep(200);
 }
