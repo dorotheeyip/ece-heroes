@@ -213,12 +213,13 @@ void supprime_combin(int plateau[LINE][COLUMN]){
             for(j=0; j<COLUMN-5; j++){
                 ligne_6=plateau[i][j];
                 if(ligne_6==plateau[i][j+1] && ligne_6==plateau[i][j+2] && ligne_6==plateau[i][j+3] && ligne_6==plateau[i][j+4] && ligne_6==plateau[i][j+5]){
-                    plateau[i][j]=0;
-                    plateau[i][j+1]=0;
-                    plateau[i][j+2]=0;
-                    plateau[i][j+3]=0;
-                    plateau[i][j+4]=0;
-                    plateau[i][j+5]=0;
+                    for(int k=0; k>LINE; k++){
+                        for(int l=0; l<COLUMN; l++){
+                            if(plateau[k][l]==plateau[i][j]){
+                                plateau[k][l]=0;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -228,12 +229,13 @@ void supprime_combin(int plateau[LINE][COLUMN]){
             for(j=0; j<COLUMN; j++){
                 colonne_6=plateau[i][j];
                 if(colonne_6==plateau[i+1][j] && colonne_6==plateau[i+2][j] && colonne_6==plateau[i+3][j] && colonne_6==plateau[i+4][j] && colonne_6==plateau[i+5][j]){
-                    plateau[i][j]=0;
-                    plateau[i+1][j]=0;
-                    plateau[i+2][j]=0;
-                    plateau[i+3][j]=0;
-                    plateau[i+4][j]=0;
-                    plateau[i+5][j]=0;
+                    for(int k=0; k>LINE; k++){
+                        for(int l=0; l<COLUMN; l++){
+                            if(plateau[k][l]==plateau[i][j]){
+                                plateau[k][l]=0;
+                            }
+                        }
+                    }
                 }
             }
         }
