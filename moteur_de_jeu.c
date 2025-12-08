@@ -312,83 +312,141 @@ void supprime_combin(int plateau[LINE][COLUMN]){
 void renouvellement_case(int plateau[LINE][COLUMN]) {
     int i, j;
 
-    // --------------------------------------------------------
-    // 1) MONTRER LA DISPARITION (les zéros restent visibles)
-    // --------------------------------------------------------
+    // Affiche l'état initial (trous visibles)
     printf("\x1b[H");
     afficher_tab_symboles(plateau);
-    Sleep(800);
-
+    Sleep(500);
 
     // --------------------------------------------------------
-    // 2) GRAVITÉ ANIMÉE — DESCENTE CASE PAR CASE
+    // 1) Appliquer la gravité jusqu'à stabilisation (par buffer)
     // --------------------------------------------------------
-    int movement;
-
+    int changed;
     do {
-        movement = 0;
+        changed = 0;
+        int next[LINE][COLUMN];
 
-        for (j = 0; j < COLUMN; j++) {
+        // copie
+        for (i = 0; i < LINE; i++)
+            for (j = 0; j < COLUMN; j++)
+                next[i][j] = plateau[i][j];
 
-            for (i = LINE - 1; i > 0; i--) {
-
+        // application de la gravité en "parallèle"
+        for (i = LINE - 1; i > 0; i--) {
+            for (j = 0; j < COLUMN; j++) {
                 if (plateau[i][j] == 0 && plateau[i - 1][j] != 0) {
-
-                    plateau[i][j] = plateau[i - 1][j];
-                    plateau[i - 1][j] = 0;
-                    movement = 1;
-
-                    printf("\x1b[H");
-                    afficher_tab_symboles(plateau);
-                    Sleep(120);
+                    next[i][j] = plateau[i - 1][j];
+                    next[i - 1][j] = 0;
+                    changed = 1;
                 }
             }
         }
 
-    } while (movement);
+        // copie back
+        for (i = 0; i < LINE; i++)
+            for (j = 0; j < COLUMN; j++)
+                plateau[i][j] = next[i][j];
 
+        if (changed) {
+            printf("\x1b[H");
+            afficher_tab_symboles(plateau);
+            Sleep(120);
+        }
+    } while (changed);
 
     // --------------------------------------------------------
-    // 3) REMPLISSAGE DES ZÉROS (ANIMATION, CORRIGÉ)
-    //    → on remplit de BAS en HAUT pour éviter les trous
+    // 2) Préparer les nouvelles pièces par colonne (UNE FOIS)
+    //    Après la gravité, les zéros doivent être tous en haut d'une colonne.
     // --------------------------------------------------------
+    int need_fill = 0;
+    int count_zero[COLUMN];
+    int new_pieces[COLUMN][LINE]; // maximum LINE nouvelles pièces par colonne
+    int max_m = 0;
+
     for (j = 0; j < COLUMN; j++) {
+        // compter les zéros en haut (continus ou totaux : après gravité ce seront les zéros)
+        int cnt = 0;
+        for (i = 0; i < LINE; i++) {
+            if (plateau[i][j] == 0) cnt++;
+        }
+        count_zero[j] = cnt;
+        if (cnt > 0) need_fill = 1;
+        if (cnt > max_m) max_m = cnt;
 
-        for (i = LINE - 1; i >= 0; i--) {
-
-            if (plateau[i][j] == 0) {
-
-                int piece = 2 + rand() % 5;
-
-                // La pièce tombe depuis au-dessus de la grille
-                for (int h = -1; h <= i; h++) {
-
-                    // efface l'ancienne position
-                    if (h > 0)
-                        plateau[h - 1][j] = 0;
-
-                    // dessine la pièce si dans la grille
-                    if (h >= 0)
-                        plateau[h][j] = piece;
-
-                    printf("\x1b[H");
-                    afficher_tab_symboles(plateau);
-                    Sleep(120);
-
-                    // efface la trace intermédiaire
-                    if (h >= 0 && h != i)
-                        plateau[h][j] = 0;
-                }
-
-                plateau[i][j] = piece; // position finale
-            }
+        // générer UNE SEULE FOIS les pièces nécessaires, de haut vers bas
+        for (i = 0; i < cnt; i++) {
+            new_pieces[j][i] = 2 + rand() % 5;
         }
     }
 
+    if (!need_fill) {
+        // rien à remplir
+        printf("\x1b[H");
+        afficher_tab_symboles(plateau);
+        Sleep(200);
+        return;
+    }
 
     // --------------------------------------------------------
-    // 4) AFFICHAGE FINAL
+    // 3) Animation synchronisée : on fait avancer toutes les nouvelles pièces
+    //    en augmentant un temps t de 0..max_m (à t = count_zero[j] la colonne j est remplie)
     // --------------------------------------------------------
+    for (int t = 0; t <= max_m; t++) {
+        int frame[LINE][COLUMN];
+
+        // commencer par une copie du plateau actuel (avec zéros en haut)
+        for (i = 0; i < LINE; i++)
+            for (j = 0; j < COLUMN; j++)
+                frame[i][j] = plateau[i][j];
+
+        // pour chaque colonne, placer les nouvelles pièces temporairement selon t
+        for (j = 0; j < COLUMN; j++) {
+            int m = count_zero[j];
+            if (m == 0) continue;
+
+            // chaque nouvelle pièce k a start_row = - (m - k)
+            // final_row = k (0..m-1)
+            for (int k = 0; k < m; k++) {
+                int start_row = -(m - k);
+                int cur_row = start_row + t;
+
+                if (cur_row < 0) {
+                    // pas encore dans la grille -> rien à dessiner
+                    continue;
+                }
+                if (cur_row > k) {
+                    // ne dépasse pas sa position finale
+                    cur_row = k;
+                }
+                if (cur_row >= 0 && cur_row < LINE) {
+                    frame[cur_row][j] = new_pieces[j][k];
+                }
+            }
+
+            // IMPORTANT : s'assurer que les cases au dessus des pièces temporaires restent visibles comme 0
+            // (on laisse frame tel quel car on a initialisé depuis plateau qui a des zéros en haut)
+        }
+
+        // afficher la frame
+        printf("\x1b[H");
+        afficher_tab_symboles(frame);
+        Sleep(120);
+    }
+
+    // --------------------------------------------------------
+    // 4) Mettre à jour le plateau final avec les nouvelles pièces (stateful)
+    // --------------------------------------------------------
+    for (j = 0; j < COLUMN; j++) {
+        int m = count_zero[j];
+        if (m == 0) continue;
+
+        // placer les nouvelles pièces en haut (0..m-1)
+        for (i = 0; i < m; i++) {
+            plateau[i][j] = new_pieces[j][i];
+        }
+        // les autres cases (i >= m) sont déjà les éléments tombés après la gravité
+    }
+
+    // affichage final
     printf("\x1b[H");
     afficher_tab_symboles(plateau);
     Sleep(200);
