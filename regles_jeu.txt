@@ -1,0 +1,96 @@
+Règles du jeu — Projet « ECE Heroes »
+
+Objectif général
+
+Le jeu est un match-3 en console : le joueur doit associer au moins
+trois items identiques pour les faire disparaître et remplir un contrat
+d’élimination dans un nombre limité de coups et un temps donné.
+
+Déroulement d’une partie
+
+-   Le joueur commence avec un nombre limité de vies.
+-   Une partie contient au moins 3 niveaux de difficulté croissante.
+-   Pour gagner la partie, il faut réussir tous les niveaux.
+-   Si le joueur perd un niveau, il perd une vie.
+-   Si le joueur n’a plus de vie → défaite.
+
+Menu principal
+
+Le programme doit proposer : 1. Lire les règles du jeu
+2. Commencer une nouvelle partie
+3. Reprendre une partie
+4. Quitter
+
+Plateau de jeu
+
+-   Chaque niveau est un plateau de 25 lignes × 45 colonnes.
+-   Les cases sont remplies aléatoirement avec 5 types d’items.
+-   Aucune figure spéciale ne doit être présente au début d’un niveau.
+
+Contrats
+
+Chaque niveau impose : - Un nombre d’items à éliminer (ex : 20 fraises,
+50 oignons…) - Un nombre maximal de coups - Un temps limité
+
+Le joueur doit remplir le contrat avant la fin du temps ou des coups.
+
+Figures et éliminations
+
+Certaines formes provoquent des effets spéciaux :
+
+1. Ligne horizontale ou verticale de 6 items identiques
+
+→ Effet : tous les items de ce type disparaissent sur tout le plateau.
+
+2. Croix de 9 items identiques
+
+→ Effet : tous les items identiques sur la ligne ET la colonne
+disparaissent.
+
+3. Carré 4×4 du même type
+
+→ Effet : disparition de tous les items contenus dans le carré.
+
+4. Ligne horizontale ou verticale de 4 items identiques
+
+→ Effet : disparition seulement de la suite.
+
+Chute des items
+
+Après chaque élimination : 
+- Les items au-dessus tombent pour combler les vides. 
+- Le haut des colonnes se remplit de nouveaux items aléatoires. 
+- Les suppressions se répètent jusqu’à ce que le plateau soit stable.
+
+Déplacement du joueur
+
+Le joueur peut : 
+- Se déplacer avec z, q, s, d ou les flèches. 
+- Sélectionner un item avec espace (un second appui annule). 
+- Choisir le voisin à permuter via les touches de déplacement.
+
+Chaque permutation = 1 coup.
+
+Si la permutation crée une figure → application des règles
+d’élimination.
+
+Fin d’un niveau
+
+-   Victoire : contrat rempli → le joueur passe au niveau suivant.
+-   Échec : temps écoulé ou coups épuisés → perte d’une vie.
+
+À la fin du niveau : - Le joueur peut continuer ou sauvegarder son
+avancée.
+
+Sauvegarde et chargement
+
+-   Au lancement : possibilité de reprendre une partie en saisissant son
+    pseudo.
+
+Extensions 
+
+-   Nouvelle figure spéciale
+-   Item bonus
+-   Item malus
+
+
