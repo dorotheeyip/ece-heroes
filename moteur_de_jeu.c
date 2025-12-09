@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <windows.h>
-
-#define LINE 7   
-#define COLUMN 10
+#include "moteur_de_jeu.h"
+#include "affichage_console.h"
+#include "affichage_console.c"
 
 // Active les couleurs ANSI sous Windows
 void activer_couleurs() {
@@ -14,41 +14,33 @@ void activer_couleurs() {
 
 void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
 
-    printf("\x1b[H");   // revient en haut sans effacer tout
-                        // garde un écran stable 10×15
+    printf("\x1b[H");  // repositionne en haut
 
     for (int i = 0; i < LINE; i++) {
         for (int j = 0; j < COLUMN; j++) {
 
             char symbole;
-            char *couleur;
+            int couleur;
 
             switch (plateau[i][j]) {
-                case 2: symbole = '*'; couleur = "\x1b[31m"; break;
-                case 3: symbole = '^'; couleur = "\x1b[32m"; break;
-                case 4: symbole = '&'; couleur = "\x1b[33m"; break;
-                case 5: symbole = '+'; couleur = "\x1b[34m"; break;
-                case 6: symbole = '%'; couleur = "\x1b[35m"; break;
-                case 0: symbole = ' '; couleur = "\x1b[0m";  break;
-                default: symbole = '?'; couleur = "\x1b[0m"; break;
+                case 2: symbole = '*'; couleur = RED; break;
+                case 3: symbole = '^'; couleur = GREEN; break;
+                case 4: symbole = '&'; couleur = YELLOW; break;
+                case 5: symbole = '+'; couleur = CYAN; break;
+                case 6: symbole = '%'; couleur = MAGENTA; break;
+                case 0: symbole = ' '; couleur = WHITE; break;
+                default: symbole = '?'; couleur = WHITE; break;
             }
 
-            printf("%s%c\x1b[0m ", couleur, symbole);
+            text_color(couleur);     // couleur Windows
+            printf("%c ", symbole);  // symbole
         }
 
         printf("\n");
     }
-}
 
-int combinaison_ligne_6(int plateau[LINE][COLUMN]);
-int combinaison_colonne_6(int plateau[LINE][COLUMN]);
-int combinaison_croix(int plateau[LINE][COLUMN]);
-int combinaison_carre(int plateau[LINE][COLUMN]);
-int combinaison_ligne_4(int plateau[LINE][COLUMN]);
-int combinaison_colonne_4(int plateau[LINE][COLUMN]);
-void supprime_combin(int plateau[LINE][COLUMN]);
-void renouvellement_case(int plateau[LINE][COLUMN]);
-void afficher_tab(int plateau[LINE][COLUMN]);
+    text_color(WHITE);  // reset
+}
 
 int main(){
     int i, j;
