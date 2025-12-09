@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "moteur_de_jeu.h"
 #include "affichage_console.h"
+#include "affichage_console.c"
 
 // Active les couleurs ANSI sous Windows
 void activer_couleurs() {
