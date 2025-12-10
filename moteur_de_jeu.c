@@ -4,13 +4,42 @@
 #include <windows.h>
 #include "moteur_de_jeu.h"
 #include "affichage_console.h"
-#include "affichage_console.c"
 
 // Active les couleurs ANSI sous Windows
 void activer_couleurs() {
     system(" ");
     // PowerShell et CMD récents activent ANSI automatiquement
 }
+
+// void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
+
+//     printf("\x1b[H");  // repositionne en haut
+
+//     for (int i = 0; i < LINE; i++) {
+//         for (int j = 0; j < COLUMN; j++) {
+
+//             char symbole;
+//             int couleur;
+
+//             switch (plateau[i][j]) {
+//                 case 2: symbole = '*'; couleur = RED; break;
+//                 case 3: symbole = '^'; couleur = GREEN; break;
+//                 case 4: symbole = '&'; couleur = YELLOW; break;
+//                 case 5: symbole = '+'; couleur = CYAN; break;
+//                 case 6: symbole = '%'; couleur = MAGENTA; break;
+//                 case 0: symbole = ' '; couleur = WHITE; break;
+//                 default: symbole = '?'; couleur = WHITE; break;
+//             }
+
+//             text_color(couleur);     // couleur Windows
+//             printf("%c ", symbole);  // symbole
+//         }
+
+//         printf("\n");
+//     }
+
+//     text_color(WHITE);  // reset
+// }
 
 void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
 
@@ -23,86 +52,23 @@ void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
             int couleur;
 
             switch (plateau[i][j]) {
-                case 2: symbole = '*'; couleur = RED; break;
-                case 3: symbole = '^'; couleur = GREEN; break;
-                case 4: symbole = '&'; couleur = YELLOW; break;
-                case 5: symbole = '+'; couleur = CYAN; break;
-                case 6: symbole = '%'; couleur = MAGENTA; break;
+                case 2: symbole = '*'; couleur = LIGHTRED; break;      // 12 au lieu de RED (4)
+                case 3: symbole = '^'; couleur = LIGHTGREEN; break;    // 10 au lieu de GREEN (2)
+                case 4: symbole = '&'; couleur = YELLOW; break;         // 14 (déjà ok)
+                case 5: symbole = '+'; couleur = LIGHTCYAN; break;     // 11 au lieu de CYAN (3) ⭐
+                case 6: symbole = '%'; couleur = LIGHTMAGENTA; break;  // 13 au lieu de MAGENTA (5) ⭐
                 case 0: symbole = ' '; couleur = WHITE; break;
                 default: symbole = '?'; couleur = WHITE; break;
             }
 
-            text_color(couleur);     // couleur Windows
-            printf("%c ", symbole);  // symbole
+            text_color(couleur);
+            printf("%c ", symbole);
         }
 
         printf("\n");
     }
 
-    text_color(WHITE);  // reset
-}
-
-int main(){
-    int i, j;
-    int plateau[LINE][COLUMN];
-    srand(time(NULL));
-
-    // Initialisation du plateau
-    for (i = 0; i < LINE; i++) {
-        for (j = 0; j < COLUMN; j++) {
-            plateau[i][j] = 2 + rand() % 5;
-        }
-    }
-
-    printf("\x1b[2J"); // efface la console
-    afficher_tab_symboles(plateau);
-    Sleep(500);
-
-    // ---------------------------------------------------------
-    // DÉTECTION DES COMBINAISONS
-    // ---------------------------------------------------------
-    int trouv = 0;
-    if (combinaison_ligne_6(plateau)) trouv = 1;
-    if (combinaison_colonne_6(plateau)) trouv = 1;
-    if (combinaison_croix(plateau)) trouv = 1;
-    if (combinaison_carre(plateau)) trouv = 1;
-    if (combinaison_ligne_4(plateau)) trouv = 1;
-    if (combinaison_colonne_4(plateau)) trouv = 1;
-
-    // ---------------------------------------------------------
-    // AFFICHAGE DES COMBINAISONS AVANT SUPPRESSION
-    // ---------------------------------------------------------
-    if (trouv) {
-        printf("\x1b[H");
-        afficher_tab_symboles(plateau);
-        Sleep(800);   // Permet de voir les combinaisons trouvées
-    }
-
-    // ---------------------------------------------------------
-    // SUPPRESSION DES COMBINAISONS
-    // ---------------------------------------------------------
-    supprime_combin(plateau);
-
-    // ---------------------------------------------------------
-    // AFFICHAGE DES VIDES AVANT DESCENTE
-    // ---------------------------------------------------------
-    printf("\x1b[H");
-    afficher_tab_symboles(plateau);
-    Sleep(800);  // Tu vois les cases vides
-
-    // ---------------------------------------------------------
-    // ANIMATION DE CHUTE + REMPLISSAGE
-    // ---------------------------------------------------------
-    renouvellement_case(plateau);
-
-    // ---------------------------------------------------------
-    // AFFICHAGE FINAL
-    // ---------------------------------------------------------
-    printf("\x1b[H");
-    afficher_tab_symboles(plateau);
-    Sleep(300);
-
-    return 0;
+    text_color(WHITE);
 }
 
 void afficher_tab(int plateau[LINE][COLUMN]){

@@ -46,7 +46,7 @@ int main() {
                 break;
 
             case 3:
-                printf("En construction...\n");
+                
                 break;
 
             case 0:

@@ -1,5 +1,11 @@
+#ifndef MOTEUR_DE_JEU_H
+#define MOTEUR_DE_JEU_H
 #define LINE 7   
 #define COLUMN 10
+
+typedef struct {
+    int plateau[LINE][COLUMN];
+} Plateau;
 
 int combinaison_ligne_6(int plateau[LINE][COLUMN]);
 // Identifie les combinaisons de 6 items en ligne
@@ -27,3 +33,6 @@ void renouvellement_case(int plateau[LINE][COLUMN]);
 
 void afficher_tab(int plateau[LINE][COLUMN]);
 // Affiche le tableau puis laisse un intervalle de temps
+
+void afficher_tab_symboles(int plateau[LINE][COLUMN]);
+#endif

@@ -6,7 +6,7 @@
 
 void effacer_ecran();
 void changer_couleur(int color);
-void afficher_item_selec(int row, int col);
+void afficher_item_selec(int row, int col, int item);
 void afficher_info_jeu(int niveau, int vies, int coups);
 
 #endif
