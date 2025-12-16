@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "sauvegarde.h"
 
 int save_game() {
     int niveau, vies, coups, rows, cols;
