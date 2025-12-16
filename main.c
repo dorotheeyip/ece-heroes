@@ -13,7 +13,7 @@ void afficher_menu();
 int lire_regle_du_jeu();
 
 // Fonction principale du jeu
-void jouer_partie() {
+void jouer_niveau() {
     Plateau plateau;
     srand(time(NULL));
     
@@ -221,23 +221,23 @@ int main() {
         scanf("%d", &choix);
 
         switch (choix) {
-            case 1:
+            case 1: // 1 - Lire les règles du jeu
                 lire_regle_du_jeu();
                 printf("\nAppuyez sur Entree pour continuer...");
                 getchar(); // Consommer le '\n' restant
                 getchar(); // Attendre l'utilisateur
                 break;
 
-            case 2:
+            case 2: // 2 - Démarrer une nouvelle partie
                 jouer_partie();
                 break;
 
-            case 3:
+            case 3: // 3 - Reprendre une partie sauvegardée
                 printf("Fonctionnalite en construction...\n");
                 Sleep(1500);
                 break;
 
-            case 0:
+            case 0: // 0 - Quitter
                 printf("Au revoir !\n");
                 break;
 
