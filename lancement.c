@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include "lancement.h"
+
 int load_game() {
     int niveau, vies, coups, rows, cols;
     int plateau[20][20];
