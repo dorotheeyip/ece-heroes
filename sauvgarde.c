@@ -4,7 +4,7 @@
 
 int save_game() {
     int niveau, vies, coups, rows, cols;
-    int plateau[20][20];
+    int plateau[LINE][COLUMN];
     char pseudo[50];
     float temps;
     char filename[60];

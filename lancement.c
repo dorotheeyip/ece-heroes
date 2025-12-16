@@ -4,7 +4,7 @@
 
 int load_game() {
     int niveau, vies, coups, rows, cols;
-    int plateau[20][20];
+    int plateau[LINE][COLUMN];
     char pseudo[50];      // <-- correction : tableau pour stocker un nom
     float temps;
     char filename[60];

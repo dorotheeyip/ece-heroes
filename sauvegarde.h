@@ -2,6 +2,7 @@
 #define SAVE_H
 
 #include <stdio.h>
+#include "moteur_de_jeu.h"
 
 /**
  * Sauvegarde la partie courante dans un fichier nommé

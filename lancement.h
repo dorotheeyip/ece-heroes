@@ -2,6 +2,7 @@
 #define SAVE_H
 
 #include <stdio.h>
+#include "moteur_de_jeu.h"
 
 /**
  * Charge une partie à partir d'un fichier correspondant au pseudo du joueur.
