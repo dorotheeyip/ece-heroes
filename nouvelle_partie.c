@@ -47,7 +47,7 @@ void verifier_etat(GameState *game) {
 
     if (game->progression >= game->objectif_total) {
         if (game->niveau == 3) {
-            printf("\n🎉 GAGNÉ 🎉\n");
+            printf("\nGAGNÉ \n");
         } else {
             printf("\nNiveau %d réussi\n", game->niveau);
             game->niveau++;
@@ -57,7 +57,8 @@ void verifier_etat(GameState *game) {
     }
 
     if (game->coups_restants == 0) {
-        printf("\n❌ ÉCHOUÉ ❌\n");
+        printf("\n ÉCHOUÉ \n");
         initialiser_niveau(game);
     }
 }
+
