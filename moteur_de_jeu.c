@@ -52,11 +52,11 @@ void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
             int couleur;
 
             switch (plateau[i][j]) {
-                case 2: symbole = '*'; couleur = LIGHTRED; break;      // 12 au lieu de RED (4)
-                case 3: symbole = '^'; couleur = LIGHTGREEN; break;    // 10 au lieu de GREEN (2)
-                case 4: symbole = '&'; couleur = YELLOW; break;         // 14 (déjà ok)
-                case 5: symbole = '+'; couleur = LIGHTCYAN; break;     // 11 au lieu de CYAN (3) ⭐
-                case 6: symbole = '%'; couleur = LIGHTMAGENTA; break;  // 13 au lieu de MAGENTA (5) ⭐
+                case 1: symbole = '*'; couleur = LIGHTRED; break;      // 12 au lieu de RED (4)
+                case 2: symbole = '^'; couleur = LIGHTGREEN; break;    // 10 au lieu de GREEN (2)
+                case 3: symbole = '&'; couleur = YELLOW; break;         // 14 (déjà ok)
+                case 4: symbole = '+'; couleur = LIGHTCYAN; break;     // 11 au lieu de CYAN (3) ⭐
+                case 5: symbole = '%'; couleur = LIGHTMAGENTA; break;  // 13 au lieu de MAGENTA (5) ⭐
                 case 0: symbole = ' '; couleur = WHITE; break;
                 default: symbole = '?'; couleur = WHITE; break;
             }
@@ -96,7 +96,7 @@ int combinaison_colonne_6(int plateau[LINE][COLUMN]){
     int i, j, k; 
     for(j=0; j<COLUMN; j++){
         for(i=0; i<LINE-5; i++){
-            if(plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j] && plateau[i+3][j]==plateau[i+4][j] && plateau[i+4][j]==plateau[i+5][j]){              
+            if(plateau[i][j]!=0 && plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j] && plateau[i+3][j]==plateau[i+4][j] && plateau[i+4][j]==plateau[i+5][j]){              
                 return 1;
             }
         }
@@ -108,11 +108,8 @@ int combinaison_croix(int plateau[LINE][COLUMN]){
     int i, j, centre;
     for(i=2; i<LINE-2; i++){
         for(j=2; j<COLUMN-2; j++){
-            centre=plateau[i][j];
-            if(centre==0){
-                continue;
-            }  
-            if(centre==plateau[i-2][j] && centre==plateau[i-1][j] && centre==plateau[i+1][j] && centre==plateau[i+2][j] && centre==plateau[i][j-2] && centre==plateau[i][j-1] && centre==plateau[i][j+1] && centre==plateau[i][j+2]){
+            centre=plateau[i][j]; 
+            if(centre!=0 && centre==plateau[i-2][j] && centre==plateau[i-1][j] && centre==plateau[i+1][j] && centre==plateau[i+2][j] && centre==plateau[i][j-2] && centre==plateau[i][j-1] && centre==plateau[i][j+1] && centre==plateau[i][j+2]){
                 return 1;
             }
         }
@@ -125,7 +122,7 @@ int combinaison_carre(int plateau[LINE][COLUMN]){
     int cote_gauche, cote_droit, cote_haut, cote_bas;
     for(i=0; i<LINE-3; i++){
         for(j=0; j<COLUMN-3; j++){
-            if(plateau[i][j] == plateau[i+1][j] && plateau[i+1][j] == plateau[i+2][j] && plateau[i+2][j] == plateau[i+3][j] &&
+            if(plateau[i][j]!=0 && plateau[i][j] == plateau[i+1][j] && plateau[i+1][j] == plateau[i+2][j] && plateau[i+2][j] == plateau[i+3][j] &&
                plateau[i][j+3] == plateau[i+1][j+3] && plateau[i+1][j+3] == plateau[i+2][j+3] && plateau[i+2][j+3] == plateau[i+3][j+3] &&
                plateau[i][j] == plateau[i][j+1] && plateau[i][j+1] == plateau[i][j+2] && plateau[i][j+2] == plateau[i][j+3] &&
                plateau[i+3][j] == plateau[i+3][j+1] && plateau[i+3][j+1] == plateau[i+3][j+2] && plateau[i+3][j+2] == plateau[i+3][j+3]){
@@ -144,7 +141,7 @@ int combinaison_ligne_4(int plateau[LINE][COLUMN]){
     int i, j;
     for(i=0; i<LINE; i++){
         for(j=0; j<COLUMN-3; j++){
-            if(plateau[i][j]==plateau[i][j+1] && plateau[i][j+1]==plateau[i][j+2] && plateau[i][j+2]==plateau[i][j+3]){
+            if(plateau[i][j]!=0 && plateau[i][j]==plateau[i][j+1] && plateau[i][j+1]==plateau[i][j+2] && plateau[i][j+2]==plateau[i][j+3]){
                 return 1;
             }
         }
@@ -156,7 +153,7 @@ int combinaison_colonne_4(int plateau[LINE][COLUMN]){
     int i, j;
     for(i=0; i<LINE-3; i++){
         for(j=0; j<COLUMN; j++){
-            if(plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j]){
+            if(plateau[i][j]!=0 && plateau[i][j]==plateau[i+1][j] && plateau[i+1][j]==plateau[i+2][j] && plateau[i+2][j]==plateau[i+3][j]){
                 return 1;
             }
         }
@@ -170,7 +167,7 @@ void supprime_combin(int plateau[LINE][COLUMN]){
         for(i=0; i<LINE; i++){
             for(j=0; j<COLUMN-5; j++){
                 ligne_6=plateau[i][j];
-                if(ligne_6==plateau[i][j+1] && ligne_6==plateau[i][j+2] && ligne_6==plateau[i][j+3] && ligne_6==plateau[i][j+4] && ligne_6==plateau[i][j+5]){
+                if(ligne_6!=0 && ligne_6==plateau[i][j+1] && ligne_6==plateau[i][j+2] && ligne_6==plateau[i][j+3] && ligne_6==plateau[i][j+4] && ligne_6==plateau[i][j+5]){
                     for(int k=0; k>LINE; k++){
                         for(int l=0; l<COLUMN; l++){
                             if(plateau[k][l]==plateau[i][j]){
@@ -186,7 +183,7 @@ void supprime_combin(int plateau[LINE][COLUMN]){
         for(i=0; i<LINE-5; i++){
             for(j=0; j<COLUMN; j++){
                 colonne_6=plateau[i][j];
-                if(colonne_6==plateau[i+1][j] && colonne_6==plateau[i+2][j] && colonne_6==plateau[i+3][j] && colonne_6==plateau[i+4][j] && colonne_6==plateau[i+5][j]){
+                if(colonne_6!=0 && colonne_6==plateau[i+1][j] && colonne_6==plateau[i+2][j] && colonne_6==plateau[i+3][j] && colonne_6==plateau[i+4][j] && colonne_6==plateau[i+5][j]){
                     for(int k=0; k>LINE; k++){
                         for(int l=0; l<COLUMN; l++){
                             if(plateau[k][l]==plateau[i][j]){
@@ -202,7 +199,7 @@ void supprime_combin(int plateau[LINE][COLUMN]){
         for(i=2; i<LINE-2; i++){
             for(j=2; j<COLUMN-2; j++){
                 centre=plateau[i][j];
-                if(centre==plateau[i-2][j] && centre==plateau[i-1][j] && centre==plateau[i+1][j] && centre==plateau[i+2][j] && centre==plateau[i][j-2] && centre==plateau[i][j-1] && centre==plateau[i][j+1] && centre==plateau[i][j+2]){
+                if(centre!=0 && centre==plateau[i-2][j] && centre==plateau[i-1][j] && centre==plateau[i+1][j] && centre==plateau[i+2][j] && centre==plateau[i][j-2] && centre==plateau[i][j-1] && centre==plateau[i][j+1] && centre==plateau[i][j+2]){
                     plateau[i][j]=0;
                     plateau[i-2][j]=0;
                     plateau[i-1][j]=0;
@@ -219,7 +216,7 @@ void supprime_combin(int plateau[LINE][COLUMN]){
     if(combinaison_carre(plateau)){
         for(i=0; i<LINE-3; i++){
             for(j=0; j<COLUMN-3; j++){
-                if(plateau[i][j] == plateau[i+1][j] && plateau[i+1][j] == plateau[i+2][j] && plateau[i+2][j] == plateau[i+3][j] &&
+                if(plateau[i][j]!=0 && plateau[i][j] == plateau[i+1][j] && plateau[i+1][j] == plateau[i+2][j] && plateau[i+2][j] == plateau[i+3][j] &&
                plateau[i][j+3] == plateau[i+1][j+3] && plateau[i+1][j+3] == plateau[i+2][j+3] && plateau[i+2][j+3] == plateau[i+3][j+3] &&
                plateau[i][j] == plateau[i][j+1] && plateau[i][j+1] == plateau[i][j+2] && plateau[i][j+2] == plateau[i][j+3] &&
                plateau[i+3][j] == plateau[i+3][j+1] && plateau[i+3][j+1] == plateau[i+3][j+2] && plateau[i+3][j+2] == plateau[i+3][j+3]){
@@ -243,7 +240,7 @@ void supprime_combin(int plateau[LINE][COLUMN]){
         for(i=0; i<LINE; i++){
             for(j=0; j<COLUMN-3; j++){
                 ligne_4=plateau[i][j];
-                if(ligne_4==plateau[i][j+1] && ligne_4==plateau[i][j+2] && ligne_4==plateau[i][j+3]){
+                if(ligne_4!=0 && ligne_4==plateau[i][j+1] && ligne_4==plateau[i][j+2] && ligne_4==plateau[i][j+3]){
                     plateau[i][j]=0;
                     plateau[i][j+1]=0;
                     plateau[i][j+2]=0;
@@ -256,7 +253,7 @@ void supprime_combin(int plateau[LINE][COLUMN]){
         for(i=0; i<LINE-3; i++){
             for(j=0; j<COLUMN; j++){
                 colonne_4=plateau[i][j];
-                if(colonne_4==plateau[i+1][j] && colonne_4==plateau[i+2][j] && colonne_4==plateau[i+3][j]){
+                if(colonne_4!=0 && colonne_4==plateau[i+1][j] && colonne_4==plateau[i+2][j] && colonne_4==plateau[i+3][j]){
                     plateau[i][j]=0;
                     plateau[i+1][j]=0;
                     plateau[i+2][j]=0;
