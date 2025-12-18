@@ -329,7 +329,7 @@ void renouvellement_case(int plateau[LINE][COLUMN]) {
 
         // générer UNE SEULE FOIS les pièces nécessaires, de haut vers bas
         for (i = 0; i < cnt; i++) {
-            new_pieces[j][i] = 2 + rand() % 5;
+            new_pieces[j][i] = 1 + rand() % 5;
         }
     }
 

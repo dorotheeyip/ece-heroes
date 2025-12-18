@@ -20,7 +20,7 @@ void jouer_niveau() {
     // Initialisation du plateau
     for (int i = 0; i < LINE; i++) {
         for (int j = 0; j < COLUMN; j++) {
-            plateau.plateau[i][j] = 2 + rand() % 5;
+            plateau.plateau[i][j] = 1 + rand() % 5;
         }
     }
     
@@ -229,7 +229,7 @@ int main() {
                 break;
 
             case 2: // 2 - Démarrer une nouvelle partie
-                jouer_partie();
+                jouer_niveau();
                 break;
 
             case 3: // 3 - Reprendre une partie sauvegardée

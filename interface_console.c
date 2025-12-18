@@ -22,7 +22,7 @@ void changer_couleur(int color) {
 // Afficher un item sélectionné
 // ---------------------------------------
 void afficher_item_selec(int row, int col, int item) {
-    const char symboles[] = {'?', '?', '*', '^', '&', '+', '%'};  // index 0-6
+    const char symboles[] = {' ', '*', '^', '&', '+', '%', '?'};  // index 0-6
     
     text_color(WHITE);
     gotoxy(col, row);
