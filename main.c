@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <windows.h>
-#include "affichage_console.h"
+#ifdef _WIN32
+    #include <windows.h>
+    #include "affichage_console.h"
+#else
+    #include "affichage_console_mac.h"
+#endif
 #include "moteur_de_jeu.h"
 #include "g_entree_user.h"
 #include "interface_console.h"

@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <windows.h>
 #include "moteur_de_jeu.h"
-#include "affichage_console.h"
+#ifdef _WIN32
+    #include <windows.h>
+    #include "affichage_console.h"
+#else
+    #include "affichage_console_mac.h"
+#endif
 
 // Active les couleurs ANSI sous Windows
 void activer_couleurs() {
