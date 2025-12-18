@@ -49,15 +49,6 @@ void afficher_tab(int plateau[LINE][COLUMN]){
 }
 
 // --------------------------------------------------------
-// Réinitialisation du tableau marque (OBLIGATOIRE)
-// --------------------------------------------------------
-void reset_marque(int marque[LINE][COLUMN]){
-    for(int i = 0; i < LINE; i++)
-        for(int j = 0; j < COLUMN; j++)
-            marque[i][j] = 0;
-}
-
-// --------------------------------------------------------
 // Détection des combinaisons
 // --------------------------------------------------------
 int combinaison_ligne_6(int plateau[LINE][COLUMN], int marque[LINE][COLUMN]){
@@ -139,9 +130,7 @@ int combinaison_colonne_4(int plateau[LINE][COLUMN], int marque[LINE][COLUMN]){
 // --------------------------------------------------------
 // Suppression + comptage (compteur[1..5])
 // --------------------------------------------------------
-void supprim_items_marques(int plateau[LINE][COLUMN],
-                           int marque[LINE][COLUMN],
-                           int compteur[6]){
+void supprim_combin(int plateau[LINE][COLUMN], int marque[LINE][COLUMN], int compteur[6]){
     for(int i = 0; i < LINE; i++){
         for(int j = 0; j < COLUMN; j++){
             if(marque[i][j]){
@@ -151,6 +140,11 @@ void supprim_items_marques(int plateau[LINE][COLUMN],
                     plateau[i][j] = 0;
                 }
             }
+        }
+    }
+    for(int k=0; k < LINE; k++){
+        for(int l=0; l < COLUMN; l++){
+            marque[k][l]=0;
         }
     }
 }
