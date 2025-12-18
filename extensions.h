@@ -27,7 +27,7 @@ int detecter_diagonale4(int plateau[LINE][COLUMN], int *ligne, int *colonne, int
 int detecter_carre2x2(int plateau[LINE][COLUMN], int *ligne, int *colonne);
 // Détecte un carré 2×2 d'items identiques et renvoie sa position via des pointeurs
 
-int detecter_ligne7(int plateau[LINE][COLUMN], int *ligne, int *colonne);
+int detecter_ligne7(int plateau[LINE][COLUMN], int *ligne, int *colonne, int *orientation);
 // Détecte une suite horizontale ou verticale de 7 items identiques via des pointeurs
 
 int detecter_figures_speciales(int plateau[LINE][COLUMN], int *ligne, int *colonne, int *orientation);

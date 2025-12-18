@@ -82,13 +82,14 @@ int detecter_carre2x2(int plateau[LINE][COLUMN], int *ligne, int *colonne){
     return 0;
 }
 
-int detecter_ligne7(int plateau[LINE][COLUMN], int *ligne, int *colonne){
+int detecter_ligne7(int plateau[LINE][COLUMN], int *ligne, int *colonne, int *orientation){
     for (int i=0; i<LINE; i++){
         for(int j=0; j<COLUMN; j++){
             if (j<COLUMN-7){
                 if (plateau[i][j]!= 0 && plateau[i][j]==plateau[i][j+1] && plateau[i][j]==plateau[i][j+2] && plateau[i][j]==plateau[i][j+3] && plateau[i][j]==plateau[i][j+4] && plateau[i][j]==plateau[i][j+5] && plateau[i][j]==plateau[i][j+6]){
                     *ligne=i;
                     *colonne=j;
+                    *orientation=2; // horizontale
                     return 1;
                 }
             }
@@ -96,6 +97,7 @@ int detecter_ligne7(int plateau[LINE][COLUMN], int *ligne, int *colonne){
                 if (plateau[i][j]!= 0 && plateau[i][j]==plateau[i+1][j] && plateau[i][j]==plateau[i+2][j] && plateau[i][j]==plateau[i+3][j] && plateau[i][j]==plateau[i+4][j] && plateau[i][j]==plateau[i+5][j] && plateau[i][j]==plateau[i+6][j]){
                     *ligne=i;
                     *colonne=j;
+                    *orientation=1; // verticale
                     return 1;
                 }
             }
@@ -107,7 +109,7 @@ int detecter_ligne7(int plateau[LINE][COLUMN], int *ligne, int *colonne){
 int detecter_figures_speciales(int plateau[LINE][COLUMN], int *ligne, int *colonne, int *orientation){
     if (detecter_diagonale4(plateau, ligne, colonne, orientation)) return 1;
     else if (detecter_carre2x2(plateau, ligne, colonne)) return 2;
-    else if (detecter_ligne7(plateau, ligne, colonne)) return 3;
+    else if (detecter_ligne7(plateau, ligne, colonne, orientation)) return 3;
     return 0;
 }
 
@@ -117,11 +119,13 @@ void effet_diagonale4(int plateau[LINE][COLUMN], int ligne, int colonne, int ori
         for(int i=0; l>=0 && c>=0; i++){
             l=ligne-i;
             c=colonne-i;
+            if (l<0 || c<0) break;
             supprimer_element(plateau, l, c, compteur_item);
         }
         for(int i=0; l<LINE && c<COLUMN; i++){
             l=ligne+i;
             c=colonne+i;
+            if (l>=LINE || c>=COLUMN) break;
             supprimer_element(plateau, l, c, compteur_item);
         }
     }
@@ -129,11 +133,13 @@ void effet_diagonale4(int plateau[LINE][COLUMN], int ligne, int colonne, int ori
         for(int i=0; l>=0 && c<COLUMN; i++){
             l=ligne-i;
             c=colonne+i;
+            if (l<0 || c>=COLUMN) break;
             supprimer_element(plateau, l, c, compteur_item);
         }
         for(int i=0; l<LINE && c>=0; i++){
             l=ligne+i;
             c=colonne-i;
+            if (l>=LINE || c<0) break;
             supprimer_element(plateau, l, c, compteur_item);
         }
     }
@@ -170,3 +176,20 @@ void effet_item_ligne7(int plateau[LINE][COLUMN], int ligne, int colonne, int co
     effet_diagonale4(plateau, ligne, colonne, 2, compteur_item);
 }
 
+void effet_extensions(int plateau[LINE][COLUMN], int compteur_item[6]){
+    int ligne, colonne, orientation;
+    int type=detecter_figures_speciales(plateau, &ligne, &colonne, &orientation);
+    switch (type){
+        case 1:
+            effet_diagonale4(plateau, ligne, colonne, orientation, compteur_item);
+            break;
+        case 2:
+            effet_carre2x2(plateau, ligne, colonne, compteur_item);
+            break;
+        case 3:
+            effet_ligne7(plateau, ligne, colonne, orientation, compteur_item);
+            break;
+        default:
+            break;
+    }
+}
