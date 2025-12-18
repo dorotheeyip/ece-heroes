@@ -44,7 +44,7 @@ int detecter_diagonale4(int plateau[LINE][COLUMN], int *ligne, int *colonne, int
     for (int i=0; i<LINE-3; i++){
         for (int j=0; j<COLUMN; j++){
             if (j<COLUMN-3){
-                if (plateau[i][j]==plateau[i+1][j+1] && plateau[i][j]==plateau[i+2][j+2] && plateau[i][j]==plateau[i+3][j+3]){
+                if (plateau[i][j]!= 0 && plateau[i][j]==plateau[i+1][j+1] && plateau[i][j]==plateau[i+2][j+2] && plateau[i][j]==plateau[i+3][j+3]){
                     *ligne=i;
                     *colonne=j;
                     *orientation=1;
@@ -52,7 +52,7 @@ int detecter_diagonale4(int plateau[LINE][COLUMN], int *ligne, int *colonne, int
                 }
             }
             if (j>2){
-                if (plateau[i][j]==plateau[i+1][j-1] && plateau[i+1][j-1]==plateau[i+2][j-2] && plateau[i][j]==plateau[i+3][j-3]){
+                if (plateau[i][j]!= 0 && plateau[i][j]==plateau[i+1][j-1] && plateau[i+1][j-1]==plateau[i+2][j-2] && plateau[i][j]==plateau[i+3][j-3]){
                     *ligne=i;
                     *colonne=j;
                     *orientation=2;
@@ -67,7 +67,7 @@ int detecter_diagonale4(int plateau[LINE][COLUMN], int *ligne, int *colonne, int
 int detecter_carre2x2(int plateau[LINE][COLUMN], int *ligne, int *colonne){
     for (int i=0; i<LINE-1; i++){
         for (int j=0; j<COLUMN-1; j++){
-            if(plateau[i][j]==plateau[i][j+1] && plateau[i][j]==plateau[i+1][j] && plateau[i][j]==plateau[i+1][j+1]){
+            if(plateau[i][j]!= 0 && plateau[i][j]==plateau[i][j+1] && plateau[i][j]==plateau[i+1][j] && plateau[i][j]==plateau[i+1][j+1]){
                 *ligne=i;
                 *colonne=j;
                 return 1;
@@ -81,14 +81,14 @@ int detecter_ligne7(int plateau[LINE][COLUMN], int *ligne, int *colonne){
     for (int i=0; i<LINE; i++){
         for(int j=0; j<COLUMN; j++){
             if (j<COLUMN-7){
-                if (plateau[i][j]==plateau[i][j+1] && plateau[i][j]==plateau[i][j+2] && plateau[i][j]==plateau[i][j+3] && plateau[i][j]==plateau[i][j+4] && plateau[i][j]==plateau[i][j+5] && plateau[i][j]==plateau[i][j+6]){
+                if (plateau[i][j]!= 0 && plateau[i][j]==plateau[i][j+1] && plateau[i][j]==plateau[i][j+2] && plateau[i][j]==plateau[i][j+3] && plateau[i][j]==plateau[i][j+4] && plateau[i][j]==plateau[i][j+5] && plateau[i][j]==plateau[i][j+6]){
                     *ligne=i;
                     *colonne=j;
                     return 1;
                 }
             }
             if (i<LINE-7){
-                if (plateau[i][j]==plateau[i+1][j] && plateau[i][j]==plateau[i+2][j] && plateau[i][j]==plateau[i+3][j] && plateau[i][j]==plateau[i+4][j] && plateau[i][j]==plateau[i+5][j] && plateau[i][j]==plateau[i+6][j]){
+                if (plateau[i][j]!= 0 && plateau[i][j]==plateau[i+1][j] && plateau[i][j]==plateau[i+2][j] && plateau[i][j]==plateau[i+3][j] && plateau[i][j]==plateau[i+4][j] && plateau[i][j]==plateau[i+5][j] && plateau[i][j]==plateau[i+6][j]){
                     *ligne=i;
                     *colonne=j;
                     return 1;
