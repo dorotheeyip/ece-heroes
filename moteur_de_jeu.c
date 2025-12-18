@@ -1,13 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
 #include "moteur_de_jeu.h"
-#ifdef _WIN32
-    #include <windows.h>
-    #include "affichage_console.h"
-#else
-    #include "affichage_console_mac.h"
-#endif
+#include "affichage_console.h"
 
 // --------------------------------------------------------
 // Active les couleurs ANSI sous Windows
@@ -163,16 +159,20 @@ void supprim_items_marques(int plateau[LINE][COLUMN],
 // Gravité + renouvellement
 // --------------------------------------------------------
 void renouvellement_case(int plateau[LINE][COLUMN]) {
+
+    int i, j;
+
     int changed;
     do {
         changed = 0;
         int next[LINE][COLUMN];
-        for(int i = 0; i < LINE; i++)
-            for(int j = 0; j < COLUMN; j++)
+
+        for(i = 0; i < LINE; i++)
+            for(j = 0; j < COLUMN; j++)
                 next[i][j] = plateau[i][j];
 
-        for(int i = LINE-1; i > 0; i--){
-            for(int j = 0; j < COLUMN; j++){
+        for(i = LINE-1; i > 0; i--){
+            for(j = 0; j < COLUMN; j++){
                 if(plateau[i][j] == 0 && plateau[i-1][j] != 0){
                     next[i][j] = plateau[i-1][j];
                     next[i-1][j] = 0;
@@ -181,27 +181,22 @@ void renouvellement_case(int plateau[LINE][COLUMN]) {
             }
         }
 
-        for(int i = 0; i < LINE; i++)
-            for(int j = 0; j < COLUMN; j++)
+        for(i = 0; i < LINE; i++)
+            for(j = 0; j < COLUMN; j++)
                 plateau[i][j] = next[i][j];
 
     } while(changed);
+
     int count_zero[COLUMN];
-    for(int j = 0; j < COLUMN; j++){
+
+    for(j = 0; j < COLUMN; j++){
         int cnt = 0;
-        for(int i = 0; i < LINE; i++)
+        for(i = 0; i < LINE; i++)
             if(plateau[i][j] == 0) cnt++;
         count_zero[j] = cnt;
 
-<<<<<<< HEAD
-        // générer UNE SEULE FOIS les pièces nécessaires, de haut vers bas
-        for (i = 0; i < cnt; i++) {
-            new_pieces[j][i] = 1 + rand() % 5;
-        }
-=======
-        //  CORRECTION RANDOM : 1 à 5
-        for(int i = 0; i < cnt; i++)
+        // CORRECTION RANDOM : 1 à 5
+        for(i = 0; i < cnt; i++)
             plateau[i][j] = 1 + rand() % 5;
->>>>>>> 35d21df (optimisation de moteur_de_jeu)
     }
 }
