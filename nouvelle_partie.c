@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "moteur_de_jeu.h"
+#include "extensions.h"
 #ifdef _WIN32
     #include "affichage_console.h"
 #else
@@ -43,44 +44,25 @@ void initialiser_niveau(GameState *game) {
                 break;
     }
 
-    // Remplir le plateau aléatoirement
-    for (int i = 0; i < LINE; i++) {
-        for (int j = 0; j < COLUMN; j++) {
-            game->plateau[i][j] = 1 + rand() % 5;
-        }
-    }
-
-    // Réinitialiser la progression initiale sur le plateau
+    
     int marque[LINE][COLUMN] = {0};
-    int compteur_item[6] = {0};
-    int continuer = 1;
-
-    // Supprimer toutes combinaisons automatiques dès le début
-    while (continuer) {
-        continuer = 0;
-
-        for(int i=0;i<LINE;i++)
-            for(int j=0;j<COLUMN;j++)
-                marque[i][j]=0;
-
-        if (combinaison_ligne_6(game->plateau, marque) ||
-            combinaison_colonne_6(game->plateau, marque) ||
-            combinaison_croix(game->plateau, marque) ||
-            combinaison_carre(game->plateau, marque) ||
-            combinaison_ligne_4(game->plateau, marque) ||
-            combinaison_colonne_4(game->plateau, marque)) {
-
-            continuer = 1;
-            supprim_combin(game->plateau, marque, compteur_item);
-            renouvellement_case(game->plateau);
-
-            // // Mettre à jour la progression
-            // for (int k = 1; k <= 5; k++) {
-            //     game->progression_items[k] += compteur_item[k];
-            //     compteur_item[k] = 0;
-            // }
+    int ligne, colonne, orientation;
+    do {
+        // Remplir le plateau aléatoirement
+        for (int i = 0; i < LINE; i++) {
+            for (int j = 0; j < COLUMN; j++) {
+                game->plateau[i][j] = 1 + rand() % 5;
+            }
         }
-    }
+    } while (
+        combinaison_ligne_6(game->plateau, marque) ||
+        combinaison_colonne_6(game->plateau, marque) ||
+        combinaison_croix(game->plateau, marque) ||
+        combinaison_carre(game->plateau, marque) ||
+        combinaison_ligne_4(game->plateau, marque) ||
+        combinaison_colonne_4(game->plateau, marque) ||
+        (game->niveau >= 2 && detecter_figures_speciales(game->plateau, &ligne, &colonne, &orientation)) // fun
+    );
 }
 
 int contrat_rempli(GameState *game) {

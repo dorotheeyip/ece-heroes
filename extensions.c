@@ -24,7 +24,7 @@ void fusee(int plateau[LINE][COLUMN], int ligne, int colonne, int orientation, i
     }
     else if(orientation==2){ // horizontale
         for(int j=0; j<COLUMN; j++){
-        supprimer_element(plateau, ligne, j, compteur_item);
+            supprimer_element(plateau, ligne, j, compteur_item);
         } 
     }
 }

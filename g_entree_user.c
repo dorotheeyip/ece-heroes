@@ -7,6 +7,7 @@
 #endif
 #include "moteur_de_jeu.h"
 #include "interface_console.h"
+#include "extensions.h"
 
 // ---------------------------------------
 // Lire une touche (non bloquant)
@@ -26,6 +27,7 @@ int lire_touche() {
 void deplacer_curseur(Cursor *c, int max_line, int max_col, int touche) {
 
     switch (touche) {
+        case 'z':  // haut
         case 'w':  // haut
         case 72:   // flèche haut
             if (c->line > 0) c->line--;
@@ -36,6 +38,7 @@ void deplacer_curseur(Cursor *c, int max_line, int max_col, int touche) {
             if (c->line < max_line - 1) c->line++;
             break;
 
+        case 'q':  // gauche
         case 'a':  // gauche
         case 75:   // flèche gauche
             if (c->col > 0) c->col--;
@@ -109,6 +112,7 @@ int combinaison_valide(SelectionState s, GameState *game) {
     // 2️⃣ VÉRIFIER LES COMBINAISONS sur le plateau "testé"
     int resultat = 0;  // Par défaut : pas de combinaison
     int marque[LINE][COLUMN]={0};
+    int ligne, colonne, orientation;
 
     if (combinaison_ligne_6(tab, marque)) resultat = 1;
     else if (combinaison_colonne_6(tab, marque)) resultat = 1;
@@ -116,6 +120,7 @@ int combinaison_valide(SelectionState s, GameState *game) {
     else if (combinaison_carre(tab, marque)) resultat = 1;
     else if (combinaison_ligne_4(tab, marque)) resultat = 1;
     else if (combinaison_colonne_4(tab, marque)) resultat = 1;
+    else if (detecter_figures_speciales(tab, &ligne, &colonne, &orientation)) resultat = 1;
     
     // 3️⃣ ANNULER LA PERMUTATION (on remet comme avant)
     temp = tab[s.r1][s.c1];
@@ -124,60 +129,3 @@ int combinaison_valide(SelectionState s, GameState *game) {
     
     return resultat;
 }
-
-
-// ---------------------------------------
-// Boucle principale IHM
-// (affichage + curseur + sélection)
-// ---------------------------------------
-// void boucle_jeu(Plateau *plateau) {
-
-//     Cursor c = {0, 0};
-//     SelectionState s = {0, -1, -1, -1, -1};
-
-//     int running = 1;
-
-//     hide_cursor();
-
-//     while (running) {
-
-//         int touche = lire_touche();
-//         if (touche != -1) {
-
-//             // Déplacement du curseur
-//             deplacer_curseur(&c, 25, 45, touche);
-
-//             // Sélection item
-//             if (touche == ' ') {
-
-//                 if (s.selected == 0) {
-//                     selectionner_item1(&s, c, plateau);
-//                 }
-//                 else if (s.selected == 1) {
-//                     selectionner_item2(&s, c, plateau);
-
-//                     // Test combinaison valide
-//                     if (combinaison_valide(s, plateau)) {
-//                         permuter_items(&s, plateau);
-//                         // pour l’instant on remet à zéro
-//                         s.selected = 0;
-//                     }
-//                     else {
-//                         // annuler sélection
-//                         s.selected = 0;
-//                     }
-//                 }
-//             }
-
-//             // On actualise l’affichage
-//             clrscr();
-//             gotoxy(1,1);
-//             printf("Curseur : (%d , %d)\n", c.line, c.col);
-//             printf("Selection : %d\n", s.selected);
-//             printf("Item1 : (%d,%d)\n", s.r1, s.c1);
-//             printf("Item2 : (%d,%d)\n", s.r2, s.c2);
-//         }
-//     }
-
-//     show_cursor();
-// }

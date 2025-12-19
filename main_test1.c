@@ -14,64 +14,172 @@
 #include "nouvelle_partie.h"
 #include "sauvegarde.h"
 
+// Prototypes de fonctions
+void gerer_menu_apres_echec(GameState *game, int *niveau_echoue);
+void mettre_a_jour_affichage(GameState *game, Cursor c, SelectionState s);
+void traiter_combinaisons_apres_mouvement(GameState *game, int num_niveau);
+void verifier_reussite_niveau(GameState *game, int niveau_reussi);
+void jouer_niveau(int num_niveau, GameState *game, int reinitialiser);
+void jouer_partie(GameState *game, int nouvelle);
+void afficher_menu();
+int lire_regle_du_jeu();
+
+// Fonction pour gérer le menu après échec du niveau
+void gerer_menu_apres_echec(GameState *game, int *niveau_echoue) {
+    int choix = menu_niveau_options(game);
+
+    if (choix == 1) {
+        // Rejouer le niveau actuel
+        jouer_niveau(game->niveau, game, 1);
+        return;
+    } else if (choix == 2) {
+        // Passer au niveau suivant
+        game->niveau++;
+        jouer_niveau(game->niveau, game, 1);
+        return;
+    } else {
+        // Retour menu principal
+        return;
+    }
+}
+
+// Fonction pour mettre à jour l'affichage
+void mettre_a_jour_affichage(GameState *game, Cursor c, SelectionState s) {
+    // Afficher le plateau
+    gotoxy(0, 0);
+    afficher_tab_symboles(game->plateau);
+    afficher_objectifs(game);
+
+    // Afficher le nouveau en blanc
+    afficher_item_selec(c.line, c.col * 2, game->plateau[c.line][c.col]);
+    
+    // Afficher les infos
+    gotoxy(0, LINE + 2);
+    printf("Position curseur: (%d, %d)  ", c.line, c.col);
+    gotoxy(0, LINE + 3);
+    printf("Selection: %d  ", s.selected);
+    if (s.selected > 0) {
+        printf("Item1: (%d,%d)  ", s.r1, s.c1);
+    }
+    if (s.selected > 1) {
+        printf("Item2: (%d,%d)  ", s.r2, s.c2);
+    }
+    gotoxy(0, LINE + 4);
+    printf("ZQSD ou Fleches = Deplacer | ESPACE = Selectionner | ECHAP = Quitter");
+}
+
+// Fonction pour traiter les combinaisons après un mouvement
+void traiter_combinaisons_apres_mouvement(GameState *game, int num_niveau) {
+    int continuer = 1;
+    int marque[LINE][COLUMN] = {0};
+    int compteur_item[6] = {0}; // Compteur pour les items supprimés 
+    while (continuer) {
+        continuer = 0;
+        for(int i = 0; i < LINE; i++){
+            for(int j = 0; j < COLUMN; j++){
+                marque[i][j] = 0;
+            }
+        }
+        
+        int ligne, colonne, orientation;
+        // Détecter et supprimer
+        if (combinaison_ligne_6(game->plateau, marque) ||
+            combinaison_colonne_6(game->plateau, marque) ||
+            combinaison_croix(game->plateau, marque) ||
+            combinaison_carre(game->plateau, marque) ||
+            combinaison_ligne_4(game->plateau, marque) ||
+            combinaison_colonne_4(game->plateau, marque) ||
+            (num_niveau >= 2 && detecter_figures_speciales(game->plateau, &ligne, &colonne, &orientation))) {  // fun
+            
+            continuer = 1;
+
+            // Montrer les combinaisons
+            clrscr();
+            gotoxy(0, 0);
+            afficher_tab_symboles(game->plateau);
+            afficher_objectifs(game);
+            pause_avec_temps(game, 500);
+            
+            if (num_niveau >= 2) { // fun
+                // Appliquer les effets des extensions
+                effet_extensions(game->plateau, compteur_item);
+            }
+
+            // Supprimer les combinaisons
+            supprim_combin(game->plateau, marque, compteur_item);
+
+            for (int i = 1; i <= 5; i++) {
+                game->progression_items[i] += compteur_item[i];
+                compteur_item[i] = 0;
+            }
+            
+            // Montrer les trous
+            clrscr();
+            gotoxy(0, 0);
+            afficher_tab_symboles(game->plateau);
+            afficher_objectifs(game);
+            pause_avec_temps(game, 500);
+            
+            // Faire tomber et renouveler les cases
+            renouvellement_case(game->plateau);
+        }
+    }
+}
+
+// Fonction pour vérifier la réussite du niveau
+void verifier_reussite_niveau(GameState *game, int niveau_reussi) {
+    clrscr();
+    printf("\nNiveau %d réussi !\n", game->niveau);
+    Sleep(1500);
+
+    // Débloquer le niveau suivant pour le menu
+    if (game->niveau < MAX_NIVEAUX) {
+        game->niveau_max_debloque = game->niveau + 1;
+    }
+
+    sauvegarder_partie(game);
+    // Afficher l'écran des niveaux
+    afficher_ecran_niveaux(game);
+
+    int choix = menu_niveau_options(game);
+
+    if (choix == 1) {
+        // Rejouer le niveau réussi
+        jouer_niveau(niveau_reussi, game, 1);
+        return;
+    }
+
+    if (choix == 2) {
+        // Passer au niveau suivant
+        jouer_niveau(niveau_reussi + 1, game, 1);
+        return;
+    }
+
+    // Retour menu principal
+    return;
+}
+
 // Fonction principale du jeu
 void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
     srand(time(NULL));
-    int compteur_item0[6] = {0}; 
     game->niveau = num_niveau;
     int niveau_reussi = game->niveau;
     if (reinitialiser) {
         initialiser_niveau(game); // seulement pour nouvelle partie ou niveau fraîchement démarré
     }
 
-    int continuer = 1;
-    int marque[LINE][COLUMN] = {0};
-    int niveau_echoue = 0;
-
-    while (continuer) {
-        continuer = 0;
-
-        // Réinitialiser la grille de marques
-        for (int i = 0; i < LINE; i++)
-            for (int j = 0; j < COLUMN; j++)
-                marque[i][j] = 0;
-
-        // Détecter les combinaisons
-        if (combinaison_ligne_6(game->plateau, marque) ||
-            combinaison_colonne_6(game->plateau, marque) ||
-            combinaison_croix(game->plateau, marque) ||
-            combinaison_carre(game->plateau, marque) ||
-            combinaison_ligne_4(game->plateau, marque) ||
-            combinaison_colonne_4(game->plateau, marque)) {
-
-            continuer = 1;
-
-            // Supprimer les combinaisons
-            supprim_combin(game->plateau, marque, compteur_item0);
-
-            // Faire tomber et renouveler les cases
-            renouvellement_case(game->plateau);
-        }
-    }
-    
     Cursor c = {0, 0};
-
     SelectionState s = {0, -1, -1, -1, -1};
     int running = 1;
+    int niveau_echoue = 0;
     
     clrscr();
     hide_cursor();
 
-    
-    
     while (running) {
+        mettre_a_jour_affichage(game, c, s);
         
-        // Afficher le plateau
-        gotoxy(0, 0);
-        afficher_tab_symboles(game->plateau);
-        afficher_objectifs(game);
-        
-         // --- Gestion échec niveau ---
+        // --- Gestion échec niveau ---
         if (!niveau_echoue && maj_temps(game)) {
             if (!gerer_echec_niveau(game, "Temps écoulé !")) {
                 // Plus de vies -> retour menu principal
@@ -91,45 +199,10 @@ void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
         }
 
         if (niveau_echoue) {
-            int choix = menu_niveau_options(game);
-
-            if (choix == 1) {
-                // Rejouer le niveau actuel
-                jouer_niveau(game->niveau, game, 1);
-                return;
-            } else if (choix == 2) {
-                // Passer au niveau suivant
-                game->niveau++;
-                jouer_niveau(game->niveau, game, 1);
-                return;
-            } else {
-                // Retour menu principal
-                return;
-            }
+            gerer_menu_apres_echec(game, &niveau_echoue);
+            return;
         }
 
-        // Mise à jour du temps
-        // if (maj_temps(game)) {
-        //     if (!gerer_echec_niveau(game, "Temps écoulé !")) return; 
-        // }
-
-        // Afficher le nouveau en blanc
-        afficher_item_selec(c.line, c.col * 2, game->plateau[c.line][c.col]);
-        
-        // Afficher les infos
-        gotoxy(0, LINE + 2);
-        printf("Position curseur: (%d, %d)  ", c.line, c.col);
-        gotoxy(0, LINE + 3);
-        printf("Selection: %d  ", s.selected);
-        if (s.selected > 0) {
-            printf("Item1: (%d,%d)  ", s.r1, s.c1);
-        }
-        if (s.selected > 1) {
-            printf("Item2: (%d,%d)  ", s.r2, s.c2);
-        }
-        gotoxy(0, LINE + 4);
-        printf("ZQSD ou Fleches = Deplacer | ESPACE = Selectionner | ECHAP = Quitter");
-        
         // Lire une touche
         int touche = lire_touche();
         if (touche != -1) {
@@ -169,10 +242,6 @@ void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
                             // Décrémenter le nombre de coups restants
                             game->coups_restants--;
 
-                            // if (game->coups_restants <= 0) {
-                            //     if (!gerer_echec_niveau(game, "Plus de coups !")) return; 
-                            // }
-
                             // Afficher la permutation
                             clrscr();
                             gotoxy(0, 0);
@@ -181,103 +250,12 @@ void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
                             pause_avec_temps(game, 300);
                             
                             // Traiter les combinaisons
-                            int continuer = 1;
-                            int marque[LINE][COLUMN]={0};
-                            int compteur_item[6]={0}; // Compteur pour les items supprimés 
-                            while (continuer) {
-                                continuer = 0;
-                                for(int i=0; i<LINE; i++){
-                                    for(int j=0; j<COLUMN; j++){
-                                        marque[i][j]=0;
-                                    }
-                                }
-                                
-                                // Détecter et supprimer
-                                if (combinaison_ligne_6(game->plateau, marque) ||
-                                    combinaison_colonne_6(game->plateau, marque) ||
-                                    combinaison_croix(game->plateau, marque) ||
-                                    combinaison_carre(game->plateau, marque) ||
-                                    combinaison_ligne_4(game->plateau, marque) ||
-                                    combinaison_colonne_4(game->plateau, marque)) {
-                                    
-                                    continuer = 1;
-
-                                    // Montrer les combinaisons
-                                    clrscr();
-                                    gotoxy(0, 0);
-                                    afficher_tab_symboles(game->plateau);
-                                    afficher_objectifs(game);
-                                    pause_avec_temps(game, 500);
-                                    
-                                    // Supprimer
-                                    supprim_combin(game->plateau, marque, compteur_item);
-                                    
-                                    if (num_niveau >= 2) {
-                                        // Appliquer les effets des extensions
-                                        effet_extensions(game->plateau, compteur_item);
-                                    }
-
-                                    for (int i = 1; i <= 5; i++) {
-                                        game->progression_items[i] += compteur_item[i];
-                                        compteur_item[i] = 0;
-                                    }
-                                    
-                                    // Montrer les trous
-                                    clrscr();
-                                    gotoxy(0, 0);
-                                    afficher_tab_symboles(game->plateau);
-                                    afficher_objectifs(game);
-                                    pause_avec_temps(game, 500);
-                                    
-                                    // Faire tomber et remplir
-                                    renouvellement_case(game->plateau);
-                                }
-                            }
+                            traiter_combinaisons_apres_mouvement(game, num_niveau);
                             
                             // Vérifier si le contrat du niveau est rempli
                             if (contrat_rempli(game)) {
-                                clrscr();
-                                printf("\nNiveau %d réussi !\n", game->niveau);
-                                Sleep(1500);
-
-                                // Débloquer le niveau suivant pour le menu
-                                if (game->niveau < MAX_NIVEAUX) {
-                                    game->niveau_max_debloque = game->niveau + 1;
-                                }
-                            
-                                sauvegarder_partie(game);
-                                // Afficher l'écran des niveaux
-                                afficher_ecran_niveaux(game);
-
-                                // // Proposer de passer au niveau suivant ou revenir au menu
-                                // if (menu_niveau_options(game)) {
-                                //     // Jouer le niveau suivant
-                                //     game->niveau++;                 // débloquer le niveau suivant
-                                //     jouer_niveau(game->niveau, game, 1); // lancer nouveau niveau
-                                //     return; // le joueur a choisi de continuer au niveau suivant
-                                // } else {
-                                //     return; // retour au menu principal
-                                // }
-                            
-                            int choix = menu_niveau_options(game);
-
-                            if (choix == 1) {
-                                // Rejouer le niveau réussi
-                                jouer_niveau(niveau_reussi, game, 1);
+                                verifier_reussite_niveau(game, niveau_reussi);
                                 return;
-                            }
-
-                            if (choix == 2) {
-                                // Passer au niveau suivant
-                                jouer_niveau(niveau_reussi + 1, game, 1);
-                                return;
-                            }
-
-                            // Retour menu principal
-                            return;
-
-
-                                // return; // on sort du niveau actuel
                             }
 
                             // Réinitialiser la sélection
@@ -316,7 +294,6 @@ void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
         Sleep(50); // Petite pause pour ne pas surcharger le CPU
     }
 
-    
     show_cursor();
     clrscr();
 }

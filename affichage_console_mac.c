@@ -27,10 +27,10 @@ void end_console() {
 
 // Déplacer le curseur à la position x, y
 void gotoxy(int x, int y) {
-    // Only move cursor if stdout is a terminal
+    // Ne déplacer le curseur que si stdout est un terminal
     if (isatty(STDOUT_FILENO)) {
-        printf("\033[%d;%dH", y + 1, x + 1); // ANSI codes are 1-based
-        fflush(stdout);                      // Flush to ensure cursor moves immediately
+        printf("\033[%d;%dH", y + 1, x + 1); // Les codes ANSI sont basés sur 1
+        fflush(stdout);                      // Vider pour s'assurer que le curseur se déplace immédiatement
     }
 }
 

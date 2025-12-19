@@ -20,10 +20,6 @@ typedef struct {
 // Prototypes des fonctions
 int lire_touche();
 void deplacer_curseur(Cursor *c, int max_line, int max_col, int touche);
-// void selectionner_item1(SelectionState *s, Cursor c, Plateau *p);
-// void selectionner_item2(SelectionState *s, Cursor c, Plateau *p);
-// void permuter_items(SelectionState *s, Plateau *p);
-// int combinaison_valide(SelectionState s, Plateau *p);
 void selectionner_item1(SelectionState *s, Cursor c, GameState *game);
 void selectionner_item2(SelectionState *s, Cursor c, GameState *game);
 void permuter_items(SelectionState *s, GameState *game);

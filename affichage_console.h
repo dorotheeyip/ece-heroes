@@ -23,13 +23,13 @@ typedef enum{
 } COLORS;
 //effacer la console
 void clrscr ();
-//déplacer le curseur à la position horizontale x, verticale y
+//dÃ©placer le curseur Ã  la position horizontale x, verticale y
 void gotoxy(int x, int y);
 //effacer la suite de la ligne
 void delete_line();
-//récupérer la position horizontale du curseur
+//rÃ©cupÃ©rer la position horizontale du curseur
 int wherex ();
-//récupérer la position verticale du curseur
+//rÃ©cupÃ©rer la position verticale du curseur
 int wherey ();
 //changer la couleur du texte
 void text_color(int color);
@@ -41,13 +41,13 @@ void set_color(int colorT,int colorBg);
 void hide_cursor();
 //montrer le curseur
 void show_cursor();
-/*savoir si une touche a été pressée
-retour : 1 si une touche a été pressée (caractère disponible en lecture avec getch), 0 sinon*/
+/*savoir si une touche a Ã©tÃ© pressÃ©e
+retour : 1 si une touche a Ã©tÃ© pressÃ©e (caractÃ¨re disponible en lecture avec getch), 0 sinon*/
 int kbhit();
-/*Lire un caractère du clavier immédiatement, sans avoir besoin d'appuyer sur Entrée.
-s'utilise généralement avec kbhit :
-si une touche a été pressée, on lit le caractère correspondant
-Retour :  entier ayant le même code binaire que le caractère lu (code ASCII du caractère)
+/*Lire un caractÃ¨re du clavier immÃ©diatement, sans avoir besoin d'appuyer sur EntrÃ©e.
+s'utilise gÃ©nÃ©ralement avec kbhit :
+si une touche a Ã©tÃ© pressÃ©e, on lit le caractÃ¨re correspondant
+Retour :  entier ayant le mÃªme code binaire que le caractÃ¨re lu (code ASCII du caractÃ¨re)
 */
 int getch();
 #endif // AFFICHAGE_CONSOLE_H_INCLUDED
