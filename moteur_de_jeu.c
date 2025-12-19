@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <windows.h>
+#ifdef _WIN32
+    #include "affichage_console.h"
+#else
+    #include "affichage_console_mac.h"
+#endif
 #include "moteur_de_jeu.h"
 #include "affichage_console.h"
 
