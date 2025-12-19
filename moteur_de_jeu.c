@@ -280,7 +280,7 @@ void renouvellement_case(int plateau[LINE][COLUMN]) {
         if (cnt > max_m) max_m = cnt;
 
         for (i = 0; i < cnt; i++) {
-            new_pieces[j][i] = 2 + rand() % 5; // 2 à 6, change si tu veux 1-5
+            new_pieces[j][i] = 1 + rand() % 5; // 1 à 5, change si tu veux 1-5
         }
     }
 
