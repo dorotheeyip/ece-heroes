@@ -83,9 +83,9 @@ void permuter_items(SelectionState *s, Plateau *p) {
 
     int (*tab)[COLUMN] = p->plateau;
     // Échange les valeurs dans la grille
-    int temp = p->plateau[s->r1][s->c1];
-    p->plateau[s->r1][s->c1] = p->plateau[s->r2][s->c2];
-    p->plateau[s->r2][s->c2] = temp;
+    int temp = tab[s->r1][s->c1];
+    tab[s->r1][s->c1] = tab[s->r2][s->c2];
+    tab[s->r2][s->c2] = temp;
     
     // Réinitialise la sélection
     s->selected = 0;
