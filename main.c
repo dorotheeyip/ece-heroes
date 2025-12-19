@@ -112,16 +112,23 @@ void jouer_niveau() {
                             
                             // Traiter les combinaisons
                             int continuer = 1;
+                            int marque[LINE][COLUMN]={0};
+                            int compteur[6]={0};
                             while (continuer) {
                                 continuer = 0;
+                                for(int i=0; i<LINE; i++){
+                                    for(int j=0; j<COLUMN; j++){
+                                        marque[i][j]=0;
+                                    }
+                                }
                                 
                                 // Détecter et supprimer
-                                if (combinaison_ligne_6(plateau.plateau) ||
-                                    combinaison_colonne_6(plateau.plateau) ||
-                                    combinaison_croix(plateau.plateau) ||
-                                    combinaison_carre(plateau.plateau) ||
-                                    combinaison_ligne_4(plateau.plateau) ||
-                                    combinaison_colonne_4(plateau.plateau)) {
+                                if (combinaison_ligne_6(plateau.plateau, marque) ||
+                                    combinaison_colonne_6(plateau.plateau, marque) ||
+                                    combinaison_croix(plateau.plateau, marque) ||
+                                    combinaison_carre(plateau.plateau, marque) ||
+                                    combinaison_ligne_4(plateau.plateau, marque) ||
+                                    combinaison_colonne_4(plateau.plateau, marque)) {
                                     
                                     continuer = 1;
                                     
@@ -132,7 +139,7 @@ void jouer_niveau() {
                                     Sleep(500);
                                     
                                     // Supprimer
-                                    supprime_combin(plateau.plateau);
+                                    supprim_combin(plateau.plateau, marque, compteur);
                                     
                                     // Montrer les trous
                                     clrscr();
