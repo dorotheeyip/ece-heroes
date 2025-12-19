@@ -107,13 +107,14 @@ int combinaison_valide(SelectionState s, Plateau *p) {
     
     // 2️⃣ VÉRIFIER LES COMBINAISONS sur le plateau "testé"
     int resultat = 0;  // Par défaut : pas de combinaison
-    
-    if (combinaison_ligne_6(tab)) resultat = 1;
-    else if (combinaison_colonne_6(tab)) resultat = 1;
-    else if (combinaison_croix(tab)) resultat = 1;
-    else if (combinaison_carre(tab)) resultat = 1;
-    else if (combinaison_ligne_4(tab)) resultat = 1;
-    else if (combinaison_colonne_4(tab)) resultat = 1;
+    int marque[LINE][COLUMN]={0};
+
+    if (combinaison_ligne_6(tab, marque)) resultat = 1;
+    else if (combinaison_colonne_6(tab, marque)) resultat = 1;
+    else if (combinaison_croix(tab, marque)) resultat = 1;
+    else if (combinaison_carre(tab, marque)) resultat = 1;
+    else if (combinaison_ligne_4(tab, marque)) resultat = 1;
+    else if (combinaison_colonne_4(tab, marque)) resultat = 1;
     
     // 3️⃣ ANNULER LA PERMUTATION (on remet comme avant)
     temp = p->plateau[s.r1][s.c1];
