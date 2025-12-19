@@ -52,12 +52,12 @@ void deplacer_curseur(Cursor *c, int max_line, int max_col, int touche) {
 // ---------------------------------------
 // Sélectionner le premier item
 // ---------------------------------------
-void selectionner_item1(SelectionState *s, Cursor c, Plateau *p) {
+void selectionner_item1(SelectionState *s, Cursor c, GameState *game) {
     s->selected = 1;
     s->r1 = c.line;
     s->c1 = c.col;
     // Appeler la fonction pour mettre en valeur l'item sélectionné
-    afficher_item_selec(s->r1, s->c1, p->plateau[s->r1][s->c1]);
+    afficher_item_selec(s->r1, s->c1, game->plateau[s->r1][s->c1]);
 
 }
 
@@ -65,27 +65,28 @@ void selectionner_item1(SelectionState *s, Cursor c, Plateau *p) {
 // ---------------------------------------
 // Sélectionner le second item
 // ---------------------------------------
-void selectionner_item2(SelectionState *s, Cursor c, Plateau *p) {
+void selectionner_item2(SelectionState *s, Cursor c, GameState *game) {
     s->r2 = c.line;
     s->c2 = c.col;
     s->selected = 2;
     // Appeler la fonction pour mettre en valeur l'item sélectionné
     // afficher_item_selec(s->r2, s->c2);
     
-    afficher_item_selec(s->r2, s->c2, p->plateau[s->r2][s->c2]);
+    afficher_item_selec(s->r2, s->c2, game->plateau[s->r2][s->c2]);
 
 }
 
 // ---------------------------------------
 // Permuter deux items sur le plateau
 // ---------------------------------------
-void permuter_items(SelectionState *s, Plateau *p) {
+void permuter_items(SelectionState *s, GameState *game) {
 
-    int (*tab)[COLUMN] = p->plateau;
+    // int (*tab)[COLUMN] = p->plateau;
     // Échange les valeurs dans la grille
-    int temp = tab[s->r1][s->c1];
-    tab[s->r1][s->c1] = tab[s->r2][s->c2];
-    tab[s->r2][s->c2] = temp;
+    int temp = game->plateau[s->r1][s->c1];
+    game->plateau[s->r1][s->c1] = game->plateau[s->r2][s->c2];
+    game->plateau[s->r2][s->c2] = temp;
+    s->selected = 0;
     
     // Réinitialise la sélection
     s->selected = 0;
@@ -95,10 +96,10 @@ void permuter_items(SelectionState *s, Plateau *p) {
 // Vérifier si la permutation créerait une combinaison valide
 // (test AVANT de permuter réellement)
 // ---------------------------------------
-int combinaison_valide(SelectionState s, Plateau *p) {
+int combinaison_valide(SelectionState s, GameState *game) {
     
     // ⚠️ Attention : son plateau = int plateau[LINE][COLUMN]
-    int (*tab)[COLUMN] = p->plateau;
+    int (*tab)[COLUMN] = game->plateau;
 
     // 1) permutation temporaire
     int temp = tab[s.r1][s.c1];
@@ -117,9 +118,9 @@ int combinaison_valide(SelectionState s, Plateau *p) {
     else if (combinaison_colonne_4(tab, marque)) resultat = 1;
     
     // 3️⃣ ANNULER LA PERMUTATION (on remet comme avant)
-    temp = p->plateau[s.r1][s.c1];
-    p->plateau[s.r1][s.c1] = p->plateau[s.r2][s.c2];
-    p->plateau[s.r2][s.c2] = temp;
+    temp = tab[s.r1][s.c1];
+    tab[s.r1][s.c1] = tab[s.r2][s.c2];
+    tab[s.r2][s.c2] = temp;
     
     return resultat;
 }
@@ -129,54 +130,54 @@ int combinaison_valide(SelectionState s, Plateau *p) {
 // Boucle principale IHM
 // (affichage + curseur + sélection)
 // ---------------------------------------
-void boucle_jeu(Plateau *plateau) {
+// void boucle_jeu(Plateau *plateau) {
 
-    Cursor c = {0, 0};
-    SelectionState s = {0, -1, -1, -1, -1};
+//     Cursor c = {0, 0};
+//     SelectionState s = {0, -1, -1, -1, -1};
 
-    int running = 1;
+//     int running = 1;
 
-    hide_cursor();
+//     hide_cursor();
 
-    while (running) {
+//     while (running) {
 
-        int touche = lire_touche();
-        if (touche != -1) {
+//         int touche = lire_touche();
+//         if (touche != -1) {
 
-            // Déplacement du curseur
-            deplacer_curseur(&c, 25, 45, touche);
+//             // Déplacement du curseur
+//             deplacer_curseur(&c, 25, 45, touche);
 
-            // Sélection item
-            if (touche == ' ') {
+//             // Sélection item
+//             if (touche == ' ') {
 
-                if (s.selected == 0) {
-                    selectionner_item1(&s, c, plateau);
-                }
-                else if (s.selected == 1) {
-                    selectionner_item2(&s, c, plateau);
+//                 if (s.selected == 0) {
+//                     selectionner_item1(&s, c, plateau);
+//                 }
+//                 else if (s.selected == 1) {
+//                     selectionner_item2(&s, c, plateau);
 
-                    // Test combinaison valide
-                    if (combinaison_valide(s, plateau)) {
-                        permuter_items(&s, plateau);
-                        // pour l’instant on remet à zéro
-                        s.selected = 0;
-                    }
-                    else {
-                        // annuler sélection
-                        s.selected = 0;
-                    }
-                }
-            }
+//                     // Test combinaison valide
+//                     if (combinaison_valide(s, plateau)) {
+//                         permuter_items(&s, plateau);
+//                         // pour l’instant on remet à zéro
+//                         s.selected = 0;
+//                     }
+//                     else {
+//                         // annuler sélection
+//                         s.selected = 0;
+//                     }
+//                 }
+//             }
 
-            // On actualise l’affichage
-            clrscr();
-            gotoxy(1,1);
-            printf("Curseur : (%d , %d)\n", c.line, c.col);
-            printf("Selection : %d\n", s.selected);
-            printf("Item1 : (%d,%d)\n", s.r1, s.c1);
-            printf("Item2 : (%d,%d)\n", s.r2, s.c2);
-        }
-    }
+//             // On actualise l’affichage
+//             clrscr();
+//             gotoxy(1,1);
+//             printf("Curseur : (%d , %d)\n", c.line, c.col);
+//             printf("Selection : %d\n", s.selected);
+//             printf("Item1 : (%d,%d)\n", s.r1, s.c1);
+//             printf("Item2 : (%d,%d)\n", s.r2, s.c2);
+//         }
+//     }
 
-    show_cursor();
-}
+//     show_cursor();
+// }

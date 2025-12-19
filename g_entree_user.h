@@ -2,6 +2,7 @@
 #define G_ENTREE_USER_H
 
 #include "moteur_de_jeu.h"  // Pour avoir accès à Plateau, LINE, COLUMN
+#include "nouvelle_partie.h" // Pour avoir accès à GameState
 
 // Position du curseur
 typedef struct {
@@ -19,9 +20,13 @@ typedef struct {
 // Prototypes des fonctions
 int lire_touche();
 void deplacer_curseur(Cursor *c, int max_line, int max_col, int touche);
-void selectionner_item1(SelectionState *s, Cursor c, Plateau *p);
-void selectionner_item2(SelectionState *s, Cursor c, Plateau *p);
-void permuter_items(SelectionState *s, Plateau *p);
-int combinaison_valide(SelectionState s, Plateau *p);
+// void selectionner_item1(SelectionState *s, Cursor c, Plateau *p);
+// void selectionner_item2(SelectionState *s, Cursor c, Plateau *p);
+// void permuter_items(SelectionState *s, Plateau *p);
+// int combinaison_valide(SelectionState s, Plateau *p);
+void selectionner_item1(SelectionState *s, Cursor c, GameState *game);
+void selectionner_item2(SelectionState *s, Cursor c, GameState *game);
+void permuter_items(SelectionState *s, GameState *game);
+int combinaison_valide(SelectionState s, GameState *game);
 
 #endif
