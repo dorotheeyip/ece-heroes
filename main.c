@@ -27,6 +27,39 @@ void jouer_niveau() {
             plateau.plateau[i][j] = 1 + rand() % 5;
         }
     }
+
+    // --------------------------------------------------------
+// Nettoyer les combinaisons initiales si présentes
+// --------------------------------------------------------
+int continuer = 1;
+int marque[LINE][COLUMN] = {0};
+int compteur[6] = {0};
+
+while (continuer) {
+    continuer = 0;
+
+    // Réinitialiser la grille de marques
+    for (int i = 0; i < LINE; i++)
+        for (int j = 0; j < COLUMN; j++)
+            marque[i][j] = 0;
+
+    // Détecter les combinaisons
+    if (combinaison_ligne_6(plateau.plateau, marque) ||
+        combinaison_colonne_6(plateau.plateau, marque) ||
+        combinaison_croix(plateau.plateau, marque) ||
+        combinaison_carre(plateau.plateau, marque) ||
+        combinaison_ligne_4(plateau.plateau, marque) ||
+        combinaison_colonne_4(plateau.plateau, marque)) {
+
+        continuer = 1;
+
+        // Supprimer les combinaisons
+        supprim_combin(plateau.plateau, marque, compteur);
+
+        // Faire tomber et renouveler les cases
+        renouvellement_case(plateau.plateau);
+    }
+}
     
     Cursor c = {0, 0};
 
@@ -131,6 +164,12 @@ void jouer_niveau() {
                                     combinaison_colonne_4(plateau.plateau, marque)) {
                                     
                                     continuer = 1;
+
+                                    // Supprimer les combinaisons
+                                    supprim_combin(plateau.plateau, marque, compteur);
+
+                                    // Faire tomber et renouveler les cases
+                                    renouvellement_case(plateau.plateau);
                                     
                                     // Montrer les combinaisons
                                     clrscr();
