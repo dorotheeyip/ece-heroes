@@ -26,7 +26,7 @@ int lire_touche() {
 void deplacer_curseur(Cursor *c, int max_line, int max_col, int touche) {
 
     switch (touche) {
-        case 'z':  // haut
+        case 'w':  // haut
         case 72:   // flèche haut
             if (c->line > 0) c->line--;
             break;
@@ -36,7 +36,7 @@ void deplacer_curseur(Cursor *c, int max_line, int max_col, int touche) {
             if (c->line < max_line - 1) c->line++;
             break;
 
-        case 'q':  // gauche
+        case 'a':  // gauche
         case 75:   // flèche gauche
             if (c->col > 0) c->col--;
             break;

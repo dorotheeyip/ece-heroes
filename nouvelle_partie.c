@@ -9,36 +9,76 @@
     #include "affichage_console_mac.h"
 #endif
 
+void jouer_niveau(int num_niveau, GameState *game);
+
 void lancer_nouvelle_partie(GameState *game) {
-    game->vies = 1;
+    game->vies = 3; // 3 vies par partie
     game->niveau = 1;
+    game->niveau_max_debloque = 1;   // au début, seul le niveau 1 est débloqué
     initialiser_niveau(game);
 }
 
 void initialiser_niveau(GameState *game) {
-
+    // Réinitialisation complète du niveau
     game->coups_restants = 30;
     game->temps_restants = 60.0f;
 
     for (int i = 1; i <= 5; i++) {
         game->objectif_items[i] = 0;
-        game->progression_items[i] = 0;
+        game->progression_items[i] = 0; // Remettre la progression à zéro
     }
 
-    if (game->niveau == 1) {
-        game->objectif_items[1] = 5; 
-        game->objectif_items[2] = 5; 
-        game->objectif_items[3] = 5; 
+    switch (game->niveau) {
+            case 1:
+                game->objectif_items[1] = 4; 
+                game->objectif_items[3] = 4;
+                break;
+            case 2:
+                game->objectif_items[2] = 30;
+                game->objectif_items[4] = 25;
+                break;
+            case 3:
+                game->objectif_items[1] = 10;
+                game->objectif_items[5] = 15;
+                break;
     }
 
-    else if (game->niveau == 2) {
-        game->objectif_items[2] = 30;
-        game->objectif_items[4] = 25;
-    }
-
+    // Remplir le plateau aléatoirement
     for (int i = 0; i < LINE; i++) {
         for (int j = 0; j < COLUMN; j++) {
             game->plateau[i][j] = 1 + rand() % 5;
+        }
+    }
+
+    // Réinitialiser la progression initiale sur le plateau
+    int marque[LINE][COLUMN] = {0};
+    int compteur_item[6] = {0};
+    int continuer = 1;
+
+    // Supprimer toutes combinaisons automatiques dès le début
+    while (continuer) {
+        continuer = 0;
+
+        for(int i=0;i<LINE;i++)
+            for(int j=0;j<COLUMN;j++)
+                marque[i][j]=0;
+
+        if (combinaison_ligne_6(game->plateau, marque) ||
+            combinaison_colonne_6(game->plateau, marque) ||
+            combinaison_croix(game->plateau, marque) ||
+            combinaison_carre(game->plateau, marque) ||
+            combinaison_ligne_4(game->plateau, marque) ||
+            combinaison_colonne_4(game->plateau, marque)) {
+
+            continuer = 1;
+            supprim_combin(game->plateau, marque, compteur_item);
+            renouvellement_case(game->plateau);
+
+            // // Mettre à jour la progression
+            // for (int k = 1; k <= 5; k++) {
+            //     game->progression_items[k] += compteur_item[k];
+            //     compteur_item[k] = 0;
+            // }
         }
     }
 }
@@ -53,6 +93,8 @@ int contrat_rempli(GameState *game) {
 
 void afficher_objectifs(GameState *game) {
     gotoxy(0, LINE + 6);
+    printf("Vies restantes : %d\n", game->vies);
+
     printf("OBJECTIFS :\n");
 
     for (int i = 1; i <= 5; i++) {
@@ -97,55 +139,92 @@ void pause_avec_temps(GameState *game, int duree_ms) {
     }
 }
 
-// void initialiser_niveau(GameState *game) {
+// Affiche les niveaux et leur statut
+void afficher_ecran_niveaux(GameState *game) {
+    clrscr();
+    printf("===== Niveaux =====\n");
 
-//     game->progression = 0;
+    for (int i = 1; i <= MAX_NIVEAUX; i++) {
+        if (i < game->niveau_max_debloque) {
+            printf("Niveau %d : REUSSI\n", i);
+        } else if (i == game->niveau_max_debloque) {
+            printf("Niveau %d : DEBLOQUE\n", i);
+        } else {
+            printf("Niveau %d : BLOQUE\n", i);
+        }
+    }
 
-//     if (game->niveau == 1) {
-//         game->coups_restants = 20;
-//         game->objectif_type = 1;
-//         game->temps_restants = 500; 
-//         printf("\nNIVEAU 1 : 10 ROUGE en 20 coups et 500 secondes\n");
-//     }
-//     else if (game->niveau == 2) {
-//         game->coups_restants = 20;
-//         game->objectif_type = 4;
-//         game->temps_restants = 350; 
-//         printf("\nNIVEAU 2 : 20 BLEU en 20 coups et 350 secondes\n");
-//     }
-//     else if (game->niveau == 3) {
-//         game->coups_restants = 15;
-//         game->objectif_type = 2;
-//         game->temps_restants = 250; 
-//         printf("\nNIVEAU 3 : 20 VERT en 15 coups et 250 secondes\n");
-//     }
-// }
+    printf("\n");
+}
 
-// void action_destruction(GameState *game, int couleur) {
-//     if (game->coups_restants <= 0) return;
+// Affiche le menu niveau après échec ou succès
+// Retourne :
+// 1 = rejouer niveau
+// 2 = passer au niveau suivant
+// 0 = retour menu principal
+int menu_niveau_options(GameState *game) {
+    int choix;
+    int niveau_suivant_disponible = (game->niveau < game->niveau_max_debloque);
 
-//     game->coups_restants--;
+    while (1) {
+        clrscr();
+        afficher_ecran_niveaux(game);
 
-//     if (couleur == game->objectif_couleur)
-//         game->progression++;
-// }
+        printf("\n===== Options Niveau %d =====\n", game->niveau);
+        printf("1 - Rejouer le niveau\n");
 
-// void verifier_etat(GameState *game) {
+        if (niveau_suivant_disponible) {
+            printf("2 - Passer au niveau suivant\n");
+        } else {
+            printf("2 - [Passer au niveau suivant] (verrouillé)\n");
+        }
 
-//     if (game->progression >= game->objectif_total) {
-//         if (game->niveau == 3) {
-//             printf("\nGAGNÉ \n");
-//         } else {
-//             printf("\nNiveau %d réussi\n", game->niveau);
-//             game->niveau++;
-//             initialiser_niveau(game);
-//         }
-//         return;
-//     }
+        printf("0 - Revenir au menu principal\n");
+        printf("Votre choix : ");
+        scanf("%d", &choix);
 
-//     if (game->coups_restants == 0) {
-//         printf("\n ÉCHOUÉ \n");
-//         initialiser_niveau(game);
-//     }
-// }
+        if (choix == 1) {
+            return 1; // rejouer niveau
+        }
+
+        if (choix == 2) {
+            if (niveau_suivant_disponible) {
+                return 2; // passer au niveau suivant
+            } else {
+                printf("\n Niveau non débloqué !\n");
+                Sleep(1500);
+                continue; // on reste dans le menu
+            }
+        }
+
+        if (choix == 0) {
+            return 0; // retour menu principal
+        }
+
+        // Choix invalide
+        printf("\nChoix invalide.\n");
+        Sleep(1000);
+    }
+}
+
+
+// Retourne 0 si la partie est terminée (toutes vies perdues), 1 sinon
+int gerer_echec_niveau(GameState *game, const char *raison) {
+    clrscr();
+    printf("%s Niveau échoué.\n", raison);
+    Sleep(1500);
+
+    game->vies--;  // Décrémenter les vies
+
+    if (game->vies <= 0) {
+        clrscr();
+        printf("\nToutes les vies sont perdues ! Partie terminée.\n");
+        Sleep(2000);
+        return 0;  // partie terminée
+    }
+
+    // Sinon, montrer le menu des niveaux
+    afficher_ecran_niveaux(game);
+    return 1; // niveau perdu mais partie continue
+}
 

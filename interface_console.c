@@ -36,10 +36,10 @@ void afficher_item_selec(int row, int col, int item) {
 }
 
 
-// ---------------------------------------
-// Afficher infos du jeu
-// ---------------------------------------
-void afficher_info_jeu(int niveau, int vies, int coups) {
-    gotoxy(1, 1);
-    printf("Niveau : %d | Vies : %d | Coups restants : %d", niveau, vies, coups);
-}
+// // ---------------------------------------
+// // Afficher infos du jeu
+// // ---------------------------------------
+// void afficher_info_jeu(int niveau, int vies, int coups) {
+//     gotoxy(1, 1);
+//     printf("Niveau : %d | Vies : %d | Coups restants : %d", niveau, vies, coups);
+// }

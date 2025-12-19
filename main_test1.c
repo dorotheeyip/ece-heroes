@@ -15,12 +15,18 @@
 #include "sauvegarde.h"
 
 // Fonction principale du jeu
-void jouer_niveau(int num_niveau, GameState *game) {
+void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
     srand(time(NULL));
     int compteur_item0[6] = {0}; 
+    game->niveau = num_niveau;
+    int niveau_reussi = game->niveau;
+    if (reinitialiser) {
+        initialiser_niveau(game); // seulement pour nouvelle partie ou niveau fraîchement démarré
+    }
 
     int continuer = 1;
     int marque[LINE][COLUMN] = {0};
+    int niveau_echoue = 0;
 
     while (continuer) {
         continuer = 0;
@@ -65,14 +71,47 @@ void jouer_niveau(int num_niveau, GameState *game) {
         afficher_tab_symboles(game->plateau);
         afficher_objectifs(game);
         
-        // Mise à jour du temps
-        if (maj_temps(game)) {
-            clrscr();
-            printf("\nTemps écoulé ! Niveau échoué.\n");
-            Sleep(1500);
-            initialiser_niveau(game);
-            return;
+         // --- Gestion échec niveau ---
+        if (!niveau_echoue && maj_temps(game)) {
+            if (!gerer_echec_niveau(game, "Temps écoulé !")) {
+                // Plus de vies -> retour menu principal
+                return;
+            } else {
+                // Niveau perdu mais vies restantes -> menu niveaux
+                niveau_echoue = 1;
+            }
         }
+
+        if (!niveau_echoue && game->coups_restants <= 0) {
+            if (!gerer_echec_niveau(game, "Plus de coups !")) {
+                return; // partie terminée
+            } else {
+                niveau_echoue = 1; // niveau perdu mais vies restantes
+            }
+        }
+
+        if (niveau_echoue) {
+            int choix = menu_niveau_options(game);
+
+            if (choix == 1) {
+                // Rejouer le niveau actuel
+                jouer_niveau(game->niveau, game, 1);
+                return;
+            } else if (choix == 2) {
+                // Passer au niveau suivant
+                game->niveau++;
+                jouer_niveau(game->niveau, game, 1);
+                return;
+            } else {
+                // Retour menu principal
+                return;
+            }
+        }
+
+        // Mise à jour du temps
+        // if (maj_temps(game)) {
+        //     if (!gerer_echec_niveau(game, "Temps écoulé !")) return; 
+        // }
 
         // Afficher le nouveau en blanc
         afficher_item_selec(c.line, c.col * 2, game->plateau[c.line][c.col]);
@@ -127,6 +166,13 @@ void jouer_niveau(int num_niveau, GameState *game) {
                             // Permuter
                             permuter_items(&s, game);
                             
+                            // Décrémenter le nombre de coups restants
+                            game->coups_restants--;
+
+                            // if (game->coups_restants <= 0) {
+                            //     if (!gerer_echec_niveau(game, "Plus de coups !")) return; 
+                            // }
+
                             // Afficher la permutation
                             clrscr();
                             gotoxy(0, 0);
@@ -194,17 +240,50 @@ void jouer_niveau(int num_niveau, GameState *game) {
                                 printf("\nNiveau %d réussi !\n", game->niveau);
                                 Sleep(1500);
 
-                                game->niveau++;
-                                initialiser_niveau(game);
-
-                                return; // on sort du niveau actuel
-                            }
+                                // Débloquer le niveau suivant pour le menu
+                                if (game->niveau < MAX_NIVEAUX) {
+                                    game->niveau_max_debloque = game->niveau + 1;
+                                }
                             
+                                sauvegarder_partie(game);
+                                // Afficher l'écran des niveaux
+                                afficher_ecran_niveaux(game);
+
+                                // // Proposer de passer au niveau suivant ou revenir au menu
+                                // if (menu_niveau_options(game)) {
+                                //     // Jouer le niveau suivant
+                                //     game->niveau++;                 // débloquer le niveau suivant
+                                //     jouer_niveau(game->niveau, game, 1); // lancer nouveau niveau
+                                //     return; // le joueur a choisi de continuer au niveau suivant
+                                // } else {
+                                //     return; // retour au menu principal
+                                // }
+                            
+                            int choix = menu_niveau_options(game);
+
+                            if (choix == 1) {
+                                // Rejouer le niveau réussi
+                                jouer_niveau(niveau_reussi, game, 1);
+                                return;
+                            }
+
+                            if (choix == 2) {
+                                // Passer au niveau suivant
+                                jouer_niveau(niveau_reussi + 1, game, 1);
+                                return;
+                            }
+
+                            // Retour menu principal
+                            return;
+
+
+                                // return; // on sort du niveau actuel
+                            }
+
                             // Réinitialiser la sélection
                             s.selected = 0;
 
                             // Sauvegarder la partie après chaque coup
-                            game->niveau = num_niveau;
                             sauvegarder_partie(game);
                             
                         } else {
@@ -236,13 +315,14 @@ void jouer_niveau(int num_niveau, GameState *game) {
         
         Sleep(50); // Petite pause pour ne pas surcharger le CPU
     }
+
     
     show_cursor();
     clrscr();
 }
 
-void jouer_partie(GameState *game) {
-    jouer_niveau(game->niveau, game);
+void jouer_partie(GameState *game, int nouvelle) {
+    jouer_niveau(game->niveau, game, nouvelle);
 }
 
 // Fonction pour afficher le menu
@@ -300,7 +380,7 @@ int main() {
                 printf("Entrez votre pseudo : ");
                 scanf("%s", game.pseudo);
                 lancer_nouvelle_partie(&game);
-                jouer_partie(&game);
+                jouer_partie(&game, 1); // nouvelle partie
                 break;
 
             case 3: // 3 - Reprendre une partie sauvegardée
@@ -310,13 +390,13 @@ int main() {
                 if (charger_sauvegarde(&game) == 1) {
                     printf("Sauvegarde chargée pour le joueur %s au niveau %d.\n", game.pseudo, game.niveau);
                     Sleep(1000);
-                    jouer_partie(&game);
+                    jouer_partie(&game, 0); // reprendre partie
                 } 
                 else {
                     printf("Aucune sauvegarde trouvée. Démarrage d'une nouvelle partie pour %s.\n", game.pseudo);
                     Sleep(1000);
                     lancer_nouvelle_partie(&game);
-                    jouer_partie(&game);
+                    jouer_partie(&game, 1); // nouvelle partie
                 }
                 Sleep(1500);
                 break;
