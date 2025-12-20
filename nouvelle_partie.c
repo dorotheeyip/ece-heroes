@@ -163,7 +163,7 @@ void afficher_objectifs(GameState *game) {
     printf("=== Niveau %d ===\n", game->niveau);
     printf("Vies restantes : ");
     for (int i = 0; i < game->vies; i++) {
-        printf("♥ ");
+        printf("@ ");
     }
 
     printf("\nOBJECTIFS :");

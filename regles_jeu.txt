@@ -12,7 +12,7 @@ Deroulement d’une partie
 -   Une partie contient au moins 3 niveaux de difficulte croissante.
 -   Pour gagner la partie, il faut reussir tous les niveaux.
 -   Si le joueur perd un niveau, il perd une vie.
--   Si le joueur n’a plus de vie → defaite.
+-   Si le joueur n’a plus de vie -> defaite.
 
 Menu principal
 
@@ -39,17 +39,17 @@ Figures et eliminations
 Certaines formes provoquent des effets speciaux :
 
 1. Ligne horizontale ou verticale de 6 items identiques
-  → Effet : tous les items de ce type disparaissent sur tout le plateau.
+  -> Effet : tous les items de ce type disparaissent sur tout le plateau.
 
 2. Croix de 9 items identiques
-  → Effet : tous les items identiques sur la ligne ET la colonne
+  -> Effet : tous les items identiques sur la ligne ET la colonne
 disparaissent.
 
 3. Carre 4×4 du meme type
-  → Effet : disparition de tous les items contenus dans le carre.
+  -> Effet : disparition de tous les items contenus dans le carre.
 
 4. Ligne horizontale ou verticale de 4 items identiques
-  → Effet : disparition seulement de la suite.
+  -> Effet : disparition seulement de la suite.
 
 Chute des items
 
@@ -67,13 +67,13 @@ Le joueur peut :
 
 Chaque permutation = 1 coup.
 
-Si la permutation cree une figure → application des regles
+Si la permutation cree une figure -> application des regles
 d’elimination.
 
 Fin d’un niveau
 
--   Victoire : contrat rempli → le joueur passe au niveau suivant.
--   echec : temps ecoule ou coups epuises → perte d’une vie.
+-   Victoire : contrat rempli -> le joueur passe au niveau suivant.
+-   echec : temps ecoule ou coups epuises -> perte d’une vie.
 
 a la fin du niveau : - Le joueur peut continuer ou sauvegarder son
 avancee.
@@ -88,24 +88,24 @@ EXTENSIONS
 Nouvelle figures speciales:
 
 1. Diagonale de 4 items identiques
-  → Effet : detruit la diagonale entiere.
+  -> Effet : detruit la diagonale entiere.
 
 2. Carre 2x2 du meme type
-  → Effet : detruit le contour du carre 2x2, detruisant ainsi un carre 4x4.
+  -> Effet : detruit le contour du carre 2x2, detruisant ainsi un carre 4x4.
 
 3. Ligne horizontale ou verticale de 7 items identiques
-  → Effet : fusionne les 7 items alignes en un seul item special du meme type, qui si explose, detruit les 2 diagonales et les lignes verticale et horizontale passant par cette case.
+  -> Effet : fusionne les 7 items alignes en un seul item special du meme type, qui si explose, detruit les 2 diagonales et les lignes verticale et horizontale passant par cette case.
 
 Objets bonus utilisables:
 
 1. Bombe (B)
-  → Effet : applique l'effet de destruction d'un carre 5x5.
+  -> Effet : applique l'effet de destruction d'un carre 5x5.
 
 2. Fusee horizontale (H)
-  → Effet : applique l'effet de destruction d'une ligne entiere.
+  -> Effet : applique l'effet de destruction d'une ligne entiere.
 
 3. Fusee verticale (V)
-  → Effet : applique l'effet de destruction d'une colonne entiere.
+  -> Effet : applique l'effet de destruction d'une colonne entiere.
 
 4. Joker (J)
-  → Effet : remplace un item par un autre item au choix.
+  -> Effet : remplace un item par un autre item au choix.
