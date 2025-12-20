@@ -22,7 +22,7 @@ void supprimer_element(int plateau[LINE][COLUMN], int i, int j, int compteur_ite
     else if (val >= 6 && val <= 10) {
         compteur_item[val - 5]++;
         plateau[i][j] = val - 5;
-        effet_item_ligne7(plateau, i, j, compteur_item); // 🔥 déclencher l'effet spécial ligne7
+        effet_item_ligne7(plateau, i, j, compteur_item); // déclencher l'effet spécial ligne7
     }
     plateau[i][j] = 0;
 }
@@ -242,7 +242,6 @@ void normaliser_plateau(int src[LINE][COLUMN], int dst[LINE][COLUMN]) {
     }
 }
 
-// Gère la saisie des objets depuis l'interface utilisateur
 int utiliser_objet(GameState *game, Cursor *c, SelectionState *s, int touche, int num_niveau, int niveau_reussi) {
     int item_pose = 0;
     switch (touche) {
