@@ -176,8 +176,6 @@ void verifier_reussite_niveau(GameState *game, int niveau_reussi) {
     return;
 }
 
-// (l'implémentation de la gestion d'objets a été déplacée vers extensions.c)
-
 // Fonction principale du jeu
 void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
     srand(time(NULL));

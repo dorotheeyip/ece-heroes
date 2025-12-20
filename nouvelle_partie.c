@@ -46,10 +46,10 @@ void initialiser_niveau(GameState *game) {
                 game->coups_restants = 15;
                 game->temps_restants = 120.0f;
 
-                game->objectif_items[1] = 18; 
-                game->objectif_items[2] = 24; 
-                game->objectif_items[3] = 24;
-                game->objectif_items[4] = 14; 
+                game->objectif_items[1] = 4; 
+                game->objectif_items[2] = 0; 
+                game->objectif_items[3] = 0;
+                game->objectif_items[4] = 0; 
                 game->objectif_items[5] = 0;
 
                 game->inventaire_max[0] = 1;
@@ -61,11 +61,11 @@ void initialiser_niveau(GameState *game) {
                 game->coups_restants = 15;
                 game->temps_restants = 120.0f;
 
-                game->objectif_items[1] = 40; 
+                game->objectif_items[1] = 4; 
                 game->objectif_items[2] = 0; 
-                game->objectif_items[3] = 32;
+                game->objectif_items[3] = 0;
                 game->objectif_items[4] = 0; 
-                game->objectif_items[5] = 40;
+                game->objectif_items[5] = 0;
 
                 game->inventaire_max[0] = 0;
                 game->inventaire_max[1] = 2;
@@ -76,7 +76,7 @@ void initialiser_niveau(GameState *game) {
                 game->coups_restants = 20;
                 game->temps_restants = 160.0f;
 
-                game->objectif_items[1] = 60; 
+                game->objectif_items[1] = 4; 
                 game->objectif_items[2] = 0; 
                 game->objectif_items[3] = 0;
                 game->objectif_items[4] = 0; 
@@ -91,11 +91,11 @@ void initialiser_niveau(GameState *game) {
                 game->coups_restants = 30;
                 game->temps_restants = 300.0f;
 
-                game->objectif_items[1] = 100; 
-                game->objectif_items[2] = 100; 
-                game->objectif_items[3] = 100;
-                game->objectif_items[4] = 100; 
-                game->objectif_items[5] = 100;
+                game->objectif_items[1] = 4; 
+                game->objectif_items[2] = 0; 
+                game->objectif_items[3] = 0;
+                game->objectif_items[4] = 0; 
+                game->objectif_items[5] = 0;
 
                 game->inventaire_max[0] = 2;
                 game->inventaire_max[1] = 1;
@@ -129,11 +129,11 @@ void initialiser_niveau(GameState *game) {
         combinaison_colonne_4(game->plateau, marque) ||
         (game->niveau >= NIV_EXT && detecter_figures_speciales(game->plateau, &ligne, &colonne, &orientation)) 
     );
-    // int plateau_test[LINE][COLUMN] = {
+    // int plateau_test[LINE][COLUMN] = { // Pour faciliter le test ligne 7
     // {1, 5, 3, 4, 5, 1, 2, 3, 4, 1},
     // {2, 1, 5, 3, 2, 5, 1, 2, 3, 1},
     // {3, 4, 1, 2, 5, 4, 1, 2, 3, 2},
-    // {5, 5, 5, 5, 1, 5, 5, 2, 3, 5}, // <- ligne 7 horizontale identique (item 5)
+    // {5, 5, 5, 5, 1, 5, 5, 2, 3, 5}, 
     // {1, 2, 3, 5, 2, 2, 3, 4, 5, 2},
     // {2, 3, 1, 5, 2, 1, 4, 3, 2, 1},
     // {3, 4, 2, 3, 1, 2, 5, 1, 3, 4},
@@ -168,7 +168,7 @@ void afficher_objectifs(GameState *game) {
 
     printf("\nOBJECTIFS :");
     char symboles[6] = {' ', '*', '^', '&', '+', '%'};
-    int couleurs[6] = {0, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTCYAN, LIGHTMAGENTA}; // Couleurs ANSI pour les symboles
+    int couleurs[6] = {0, LIGHTRED, LIGHTGREEN, YELLOW, LIGHTCYAN, LIGHTMAGENTA}; 
     for (int i = 1; i <= 5; i++) {
         if (game->objectif_items[i] > 0) {
             text_color(couleurs[i]);

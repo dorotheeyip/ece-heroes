@@ -75,7 +75,6 @@ void selectionner_item2(SelectionState *s, Cursor c, GameState *game) {
     s->c2 = c.col;
     s->selected = 2;
     // Appeler la fonction pour mettre en valeur l'item sélectionné
-    // afficher_item_selec(s->r2, s->c2);
     
     afficher_item_selec(s->r2, s->c2, game->plateau[s->r2][s->c2]);
 
@@ -86,7 +85,6 @@ void selectionner_item2(SelectionState *s, Cursor c, GameState *game) {
 // ---------------------------------------
 void permuter_items(SelectionState *s, GameState *game) {
 
-    // int (*tab)[COLUMN] = p->plateau;
     // Échange les valeurs dans la grille
     int temp = game->plateau[s->r1][s->c1];
     game->plateau[s->r1][s->c1] = game->plateau[s->r2][s->c2];
@@ -103,7 +101,7 @@ void permuter_items(SelectionState *s, GameState *game) {
 // ---------------------------------------
 int combinaison_valide(SelectionState s, GameState *game) {
     
-    // ⚠️ Attention : son plateau = int plateau[LINE][COLUMN]
+    // Attention : son plateau = int plateau[LINE][COLUMN]
     int (*tab)[COLUMN] = game->plateau;
 
     // 1) permutation temporaire
@@ -111,7 +109,7 @@ int combinaison_valide(SelectionState s, GameState *game) {
     tab[s.r1][s.c1] = tab[s.r2][s.c2];
     tab[s.r2][s.c2] = temp;
     
-    // 2️⃣ VÉRIFIER LES COMBINAISONS sur le plateau "testé"
+    // VÉRIFIER LES COMBINAISONS sur le plateau "testé"
     int resultat = 0;  // Par défaut : pas de combinaison
     int marque[LINE][COLUMN]={0};
     int ligne, colonne, orientation;
@@ -128,7 +126,7 @@ int combinaison_valide(SelectionState s, GameState *game) {
     else if (game->niveau >= NIV_EXT && detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation)) resultat = 1; 
 
     
-    // 3️⃣ ANNULER LA PERMUTATION (on remet comme avant)
+    // ANNULER LA PERMUTATION (on remet comme avant)
     temp = tab[s.r1][s.c1];
     tab[s.r1][s.c1] = tab[s.r2][s.c2];
     tab[s.r2][s.c2] = temp;

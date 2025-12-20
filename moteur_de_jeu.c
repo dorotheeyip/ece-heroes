@@ -54,7 +54,7 @@ void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
                     case 5: symbole = '%'; break;
                 }
 
-                // Clignotement : alterne jaune / couleur normale
+                // Clignotement 
                 if (blink) {
                     couleur = YELLOW;
                 } else {
