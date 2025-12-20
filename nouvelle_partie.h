@@ -15,6 +15,8 @@ typedef struct {
     int objectif_items[5+1];
     float temps_restants;
     int progression_items[5+1];
+    int inventaire[4]; // pour les objets spéciaux
+    int inventaire_max[4];
     int plateau[LINE][COLUMN];
 } GameState;
 

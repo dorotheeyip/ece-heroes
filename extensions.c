@@ -1,3 +1,4 @@
+#include "moteur_de_jeu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -42,16 +43,27 @@ void joker(int plateau[LINE][COLUMN], int ligne, int colonne, int type){
     plateau[ligne][colonne]=type;
 }
 
-void placer_itembonus(int plateau[LINE][COLUMN], int ligne, int colonne, int typebonus, int orientation, int type, int compteur_item[6]){
-    if (typebonus==1){
+int placer_itembonus(int plateau[LINE][COLUMN], int ligne, int colonne, int typebonus, int type, int compteur_item[6], int inventaire[4]){
+    if (!inventaire[typebonus]) return 0; // pas d'item dispo
+    inventaire[typebonus]--; // utiliser l'item
+
+    if (typebonus==0){
         bombe(plateau, ligne, colonne, compteur_item);
+        return 1;
     }
-    else if (typebonus==2){
-        fusee(plateau, ligne, colonne, orientation, compteur_item);
+    if (typebonus==1){
+        fusee(plateau, ligne, colonne, 2, compteur_item);
+        return 1;
     }
-    else if (typebonus==3){
+    if (typebonus==2){
+        fusee(plateau, ligne, colonne, 1, compteur_item);
+        return 1;
+    }
+    if (typebonus==3){
         joker(plateau, ligne, colonne, type);
+        return 1;
     }
+    return 0;
 }
 
 int detecter_diagonale4(int plateau[LINE][COLUMN], int *ligne, int *colonne, int *orientation){

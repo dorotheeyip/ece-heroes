@@ -17,7 +17,6 @@ void changer_couleur(int color) {
     text_color(color);
 }
 
-
 // ---------------------------------------
 // Afficher un item sélectionné
 // ---------------------------------------
@@ -34,12 +33,3 @@ void afficher_item_selec(int row, int col, int item) {
     
     text_color(WHITE);
 }
-
-
-// // ---------------------------------------
-// // Afficher infos du jeu
-// // ---------------------------------------
-// void afficher_info_jeu(int niveau, int vies, int coups) {
-//     gotoxy(1, 1);
-//     printf("Niveau : %d | Vies : %d | Coups restants : %d", niveau, vies, coups);
-// }

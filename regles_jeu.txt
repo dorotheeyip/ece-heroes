@@ -1,22 +1,22 @@
-Règles du jeu — Projet « ECE Heroes »
+Regles du jeu — Projet « ECE Heroes »
 
-Objectif général
+Objectif general
 
 Le jeu est un match-3 en console : le joueur doit associer au moins
-trois items identiques pour les faire disparaître et remplir un contrat
-d’élimination dans un nombre limité de coups et un temps donné.
+trois items identiques pour les faire disparaitre et remplir un contrat
+d’elimination dans un nombre limite de coups et un temps donne.
 
-Déroulement d’une partie
+Deroulement d’une partie
 
--   Le joueur commence avec un nombre limité de vies.
--   Une partie contient au moins 3 niveaux de difficulté croissante.
--   Pour gagner la partie, il faut réussir tous les niveaux.
+-   Le joueur commence avec un nombre limite de vies.
+-   Une partie contient au moins 3 niveaux de difficulte croissante.
+-   Pour gagner la partie, il faut reussir tous les niveaux.
 -   Si le joueur perd un niveau, il perd une vie.
--   Si le joueur n’a plus de vie → défaite.
+-   Si le joueur n’a plus de vie → defaite.
 
 Menu principal
 
-Le programme doit proposer : 1. Lire les règles du jeu
+Le programme doit proposer : 1. Lire les regles du jeu
 2. Commencer une nouvelle partie
 3. Reprendre une partie
 4. Quitter
@@ -24,73 +24,88 @@ Le programme doit proposer : 1. Lire les règles du jeu
 Plateau de jeu
 
 -   Chaque niveau est un plateau de 25 lignes × 45 colonnes.
--   Les cases sont remplies aléatoirement avec 5 types d’items.
--   Aucune figure spéciale ne doit être présente au début d’un niveau.
+-   Les cases sont remplies aleatoirement avec 5 types d’items.
+-   Aucune figure speciale ne doit etre presente au debut d’un niveau.
 
 Contrats
 
-Chaque niveau impose : - Un nombre d’items à éliminer (ex : 20 fraises,
-50 oignons…) - Un nombre maximal de coups - Un temps limité
+Chaque niveau impose : - Un nombre d’items a eliminer (ex : 20 fraises,
+50 oignons…) - Un nombre maximal de coups - Un temps limite
 
 Le joueur doit remplir le contrat avant la fin du temps ou des coups.
 
-Figures et éliminations
+Figures et eliminations
 
-Certaines formes provoquent des effets spéciaux :
+Certaines formes provoquent des effets speciaux :
 
 1. Ligne horizontale ou verticale de 6 items identiques
-
-→ Effet : tous les items de ce type disparaissent sur tout le plateau.
+  → Effet : tous les items de ce type disparaissent sur tout le plateau.
 
 2. Croix de 9 items identiques
-
-→ Effet : tous les items identiques sur la ligne ET la colonne
+  → Effet : tous les items identiques sur la ligne ET la colonne
 disparaissent.
 
-3. Carré 4×4 du même type
-
-→ Effet : disparition de tous les items contenus dans le carré.
+3. Carre 4×4 du meme type
+  → Effet : disparition de tous les items contenus dans le carre.
 
 4. Ligne horizontale ou verticale de 4 items identiques
-
-→ Effet : disparition seulement de la suite.
+  → Effet : disparition seulement de la suite.
 
 Chute des items
 
-Après chaque élimination : 
+Apres chaque elimination : 
 - Les items au-dessus tombent pour combler les vides. 
-- Le haut des colonnes se remplit de nouveaux items aléatoires. 
-- Les suppressions se répètent jusqu’à ce que le plateau soit stable.
+- Le haut des colonnes se remplit de nouveaux items aleatoires. 
+- Les suppressions se repetent jusqu’a ce que le plateau soit stable.
 
-Déplacement du joueur
+Deplacement du joueur
 
 Le joueur peut : 
-- Se déplacer avec z, q, s, d ou les flèches. 
-- Sélectionner un item avec espace (un second appui annule). 
-- Choisir le voisin à permuter via les touches de déplacement.
+- Se deplacer avec z, q, s, d ou les fleches. 
+- Selectionner un item avec espace (un second appui annule). 
+- Choisir le voisin a permuter via les touches de deplacement.
 
 Chaque permutation = 1 coup.
 
-Si la permutation crée une figure → application des règles
-d’élimination.
+Si la permutation cree une figure → application des regles
+d’elimination.
 
 Fin d’un niveau
 
 -   Victoire : contrat rempli → le joueur passe au niveau suivant.
--   Échec : temps écoulé ou coups épuisés → perte d’une vie.
+-   echec : temps ecoule ou coups epuises → perte d’une vie.
 
-À la fin du niveau : - Le joueur peut continuer ou sauvegarder son
-avancée.
+a la fin du niveau : - Le joueur peut continuer ou sauvegarder son
+avancee.
 
 Sauvegarde et chargement
 
--   Au lancement : possibilité de reprendre une partie en saisissant son
+-   Au lancement : possibilite de reprendre une partie en saisissant son
     pseudo.
 
-Extensions 
+EXTENSIONS 
 
--   Nouvelle figure spéciale
--   Item bonus
--   Item malus
+Nouvelle figures speciales:
 
+1. Diagonale de 4 items identiques
+  → Effet : detruit la diagonale entiere.
 
+2. Carre 2x2 du meme type
+  → Effet : detruit le contour du carre 2x2, detruisant ainsi un carre 4x4.
+
+3. Ligne horizontale ou verticale de 7 items identiques
+  → Effet : fusionne les 7 items alignes en un seul item special du meme type, qui si explose, detruit les 2 diagonales et les lignes verticale et horizontale passant par cette case.
+
+Objets bonus utilisables:
+
+1. Bombe (B)
+  → Effet : applique l'effet de destruction d'un carre 5x5.
+
+2. Fusee horizontale (H)
+  → Effet : applique l'effet de destruction d'une ligne entiere.
+
+3. Fusee verticale (V)
+  → Effet : applique l'effet de destruction d'une colonne entiere.
+
+4. Joker (J)
+  → Effet : remplace un item par un autre item au choix.

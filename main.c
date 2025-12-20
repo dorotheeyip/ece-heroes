@@ -10,97 +10,216 @@
 #include "moteur_de_jeu.h"
 #include "g_entree_user.h"
 #include "interface_console.h"
+#include "extensions.h"
+#include "nouvelle_partie.h"
+#include "sauvegarde.h"
+#include "main.h"
 
+// Fonction pour gérer le menu après échec du niveau
+void gerer_menu_apres_echec(GameState *game, int *niveau_echoue) {
+    int choix = menu_niveau_options(game);
 
-// Prototypes des fonctions du menu
-void afficher_menu();
-int lire_regle_du_jeu();
-
-// Fonction principale du jeu
-void jouer_niveau() {
-    Plateau plateau;
-    srand(time(NULL));
-    
-    // Initialisation du plateau
-    for (int i = 0; i < LINE; i++) {
-        for (int j = 0; j < COLUMN; j++) {
-            plateau.plateau[i][j] = 1 + rand() % 5;
-        }
-    }
-
-    // --------------------------------------------------------
-// Nettoyer les combinaisons initiales si présentes
-// --------------------------------------------------------
-int continuer = 1;
-int marque[LINE][COLUMN] = {0};
-int compteur[6] = {0};
-
-while (continuer) {
-    continuer = 0;
-
-    // Réinitialiser la grille de marques
-    for (int i = 0; i < LINE; i++)
-        for (int j = 0; j < COLUMN; j++)
-            marque[i][j] = 0;
-
-    // Détecter les combinaisons
-    if (combinaison_ligne_6(plateau.plateau, marque) ||
-        combinaison_colonne_6(plateau.plateau, marque) ||
-        combinaison_croix(plateau.plateau, marque) ||
-        combinaison_carre(plateau.plateau, marque) ||
-        combinaison_ligne_4(plateau.plateau, marque) ||
-        combinaison_colonne_4(plateau.plateau, marque)) {
-
-        continuer = 1;
-
-        // Supprimer les combinaisons
-        supprim_combin(plateau.plateau, marque, compteur);
-
-        // Faire tomber et renouveler les cases
-        renouvellement_case(plateau.plateau);
+    if (choix == 1) {
+        // Rejouer le niveau actuel
+        jouer_niveau(game->niveau, game, 1);
+        return;
+    } else if (choix == 2) {
+        // Passer au niveau suivant
+        game->niveau++;
+        jouer_niveau(game->niveau, game, 1);
+        return;
+    } else {
+        // Retour menu principal
+        return;
     }
 }
-    
-    Cursor c = {0, 0};
 
+// Fonction pour mettre à jour l'affichage
+void mettre_a_jour_affichage(GameState *game, Cursor c, SelectionState s) {
+    // Afficher le plateau
+    gotoxy(0, 0);
+    afficher_tab_symboles(game->plateau);
+    afficher_objectifs(game);
+
+    // Afficher le nouveau en blanc
+    afficher_item_selec(c.line, c.col * 2, game->plateau[c.line][c.col]);
+    
+    // Afficher les infos
+    gotoxy(0, LINE + 2);
+    printf("Position curseur: (%d, %d)  ", c.line, c.col);
+    gotoxy(0, LINE + 3);
+    printf("Selection: %d  ", s.selected);
+    if (s.selected > 0) {
+        printf("Item1: (%d,%d)  ", s.r1, s.c1);
+    }
+    if (s.selected > 1) {
+        printf("Item2: (%d,%d)  ", s.r2, s.c2);
+    }
+    gotoxy(0, LINE + 4);
+
+    printf("ZQSD ou Fleches = Deplacer | ESPACE = Selectionner | ECHAP = Quitter\n");
+    if (game->niveau >= NIV_EXT) { // fun
+        printf("\n=== Objets ===\nB = bombe (%d/%d) | H = fusee horizontale (%d/%d) | V = fusee verticale (%d/%d) | J = joker (%d/%d)\n", game->inventaire[0], game->inventaire_max[0], game->inventaire[1], game->inventaire_max[1], game->inventaire[2], game->inventaire_max[2], game->inventaire[3], game->inventaire_max[3]);
+        if (s.selected == 'j') {
+            printf("JOKER: Remplace la selection par ");
+            text_color(LIGHTRED);
+            printf("1 = [*] ");
+            text_color(LIGHTGREEN);
+            printf("2 = [^] ");
+            text_color(YELLOW);
+            printf("3 = [&] ");
+            text_color(LIGHTCYAN);
+            printf("4 = [+] ");
+            text_color(LIGHTMAGENTA);
+            printf("5 = [%%]");
+            text_color(WHITE);
+        }
+    }
+}
+
+// Fonction pour traiter les combinaisons après un mouvement
+void traiter_combinaisons_apres_mouvement(GameState *game, int num_niveau) {
+    int continuer = 1;
+    int marque[LINE][COLUMN] = {0};
+    int compteur_item[6] = {0}; // Compteur pour les items supprimés 
+    while (continuer) {
+        continuer = 0;
+        for(int i = 0; i < LINE; i++){
+            for(int j = 0; j < COLUMN; j++){
+                marque[i][j] = 0;
+            }
+        }
+        
+        int ligne, colonne, orientation;
+        // Détecter et supprimer        
+        int plateau_normalise[LINE][COLUMN];
+        normaliser_plateau(game->plateau, plateau_normalise);
+        
+        int type_special = 0;
+        if (num_niveau >= NIV_EXT) { // fun
+            type_special = detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation);
+        }
+
+        if (type_special ||
+            combinaison_ligne_6(plateau_normalise, marque) ||
+            combinaison_colonne_6(plateau_normalise, marque) ||
+            combinaison_croix(plateau_normalise, marque) ||
+            combinaison_carre(plateau_normalise, marque) ||
+            combinaison_ligne_4(plateau_normalise, marque) ||
+            combinaison_colonne_4(plateau_normalise, marque)) {
+
+            continuer = 1;
+
+            // Montrer les combinaisons
+            clrscr();
+            gotoxy(0, 0);
+            afficher_tab_symboles(game->plateau);
+            afficher_objectifs(game);
+            pause_avec_temps(game, 500);
+
+            if (num_niveau >= NIV_EXT) { // fun
+                // Appliquer les effets des extensions
+                effet_extensions(plateau_normalise, game->plateau, compteur_item);
+            }
+
+            // Supprimer les combinaisons
+            supprim_combin(game->plateau, marque, compteur_item);
+
+            for (int i = 1; i <= 5; i++) {
+                game->progression_items[i] += compteur_item[i];
+                compteur_item[i] = 0;
+            }
+            
+            // Montrer les trous
+            clrscr();
+            gotoxy(0, 0);
+            afficher_tab_symboles(game->plateau);
+            afficher_objectifs(game);
+            pause_avec_temps(game, 500);
+            
+            // Faire tomber et renouveler les cases
+            renouvellement_case(game->plateau);
+        }
+    }
+}
+
+// Fonction pour vérifier la réussite du niveau
+void verifier_reussite_niveau(GameState *game, int niveau_reussi) {
+    clrscr();
+    printf("\nNiveau %d reussi !\n", game->niveau);
+    Sleep(1500);
+
+    // Débloquer le niveau suivant pour le menu
+    if (game->niveau < MAX_NIVEAUX) {
+        game->niveau_max_debloque = game->niveau + 1;
+    }
+
+    sauvegarder_partie(game);
+    // Afficher l'écran des niveaux
+    afficher_ecran_niveaux(game);
+
+    int choix = menu_niveau_options(game);
+
+    if (choix == 1) {
+        // Rejouer le niveau réussi
+        jouer_niveau(niveau_reussi, game, 1);
+        return;
+    }
+
+    if (choix == 2) {
+        // Passer au niveau suivant
+        jouer_niveau(niveau_reussi + 1, game, 1);
+        return;
+    }
+
+    // Retour menu principal
+    return;
+}
+
+// Fonction principale du jeu
+void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
+    srand(time(NULL));
+    game->niveau = num_niveau;
+    int niveau_reussi = game->niveau;
+    if (reinitialiser) {
+        initialiser_niveau(game); // seulement pour nouvelle partie ou niveau fraîchement démarré
+    }
+
+    Cursor c = {0, 0};
     SelectionState s = {0, -1, -1, -1, -1};
     int running = 1;
+    int niveau_echoue = 0;
     
     clrscr();
     hide_cursor();
 
-    
-    
     while (running) {
-        // Afficher le plateau
-        gotoxy(0, 0);
-        afficher_tab_symboles(plateau.plateau);
+        mettre_a_jour_affichage(game, c, s);
         
-        // // Afficher le curseur
-        // gotoxy(c.col * 2, c.line);
-        // text_color(WHITE);
-        // printf("[]");
-
-        // Réafficher l'ancien en couleur normale
-        
-
-        // Afficher le nouveau en blanc
-        afficher_item_selec(c.line, c.col * 2, plateau.plateau[c.line][c.col]);
-        
-        // Afficher les infos
-        gotoxy(0, LINE + 2);
-        printf("Position curseur: (%d, %d)  ", c.line, c.col);
-        gotoxy(0, LINE + 3);
-        printf("Selection: %d  ", s.selected);
-        if (s.selected > 0) {
-            printf("Item1: (%d,%d)  ", s.r1, s.c1);
+        // --- Gestion échec niveau ---
+        if (!niveau_echoue && maj_temps(game)) {
+            if (!gerer_echec_niveau(game, "Temps écoulé !")) {
+                // Plus de vies -> retour menu principal
+                return;
+            } else {
+                // Niveau perdu mais vies restantes -> menu niveaux
+                niveau_echoue = 1;
+            }
         }
-        if (s.selected > 1) {
-            printf("Item2: (%d,%d)  ", s.r2, s.c2);
+
+        if (!niveau_echoue && game->coups_restants <= 0) {
+            if (!gerer_echec_niveau(game, "Plus de coups !")) {
+                return; // partie terminée
+            } else {
+                niveau_echoue = 1; // niveau perdu mais vies restantes
+            }
         }
-        gotoxy(0, LINE + 4);
-        printf("ZQSD ou Fleches = Deplacer | ESPACE = Selectionner | ECHAP = Quitter");
-        
+
+        if (niveau_echoue) {
+            gerer_menu_apres_echec(game, &niveau_echoue);
+            return;
+        }
+
         // Lire une touche
         int touche = lire_touche();
         if (touche != -1) {
@@ -119,7 +238,7 @@ while (continuer) {
                 
                 if (s.selected == 0) {
                     // Première sélection
-                    selectionner_item1(&s, c, &plateau);
+                    selectionner_item1(&s, c, game);
                     
                 } else if (s.selected == 1) {
                     // Deuxième sélection
@@ -130,69 +249,37 @@ while (continuer) {
                     
                     if ((diff_r == 1 && diff_c == 0) || (diff_r == 0 && diff_c == 1)) {
                         // Cases adjacentes
-                        selectionner_item2(&s, c, &plateau);
+                        selectionner_item2(&s, c, game);
                         
                         // Test combinaison valide
-                        if (combinaison_valide(s, &plateau)) {
+                        if (combinaison_valide(s, game)) {
                             // Permuter
-                            permuter_items(&s, &plateau);
+                            permuter_items(&s, game);
                             
+                            // Décrémenter le nombre de coups restants
+                            game->coups_restants--;
+
                             // Afficher la permutation
                             clrscr();
                             gotoxy(0, 0);
-                            afficher_tab_symboles(plateau.plateau);
-                            Sleep(300);
+                            afficher_tab_symboles(game->plateau);
+                            afficher_objectifs(game);
+                            pause_avec_temps(game, 300);
                             
                             // Traiter les combinaisons
-                            int continuer = 1;
-                            int marque[LINE][COLUMN]={0};
-                            int compteur[6]={0};
-                            while (continuer) {
-                                continuer = 0;
-                                for(int i=0; i<LINE; i++){
-                                    for(int j=0; j<COLUMN; j++){
-                                        marque[i][j]=0;
-                                    }
-                                }
-                                
-                                // Détecter et supprimer
-                                if (combinaison_ligne_6(plateau.plateau, marque) ||
-                                    combinaison_colonne_6(plateau.plateau, marque) ||
-                                    combinaison_croix(plateau.plateau, marque) ||
-                                    combinaison_carre(plateau.plateau, marque) ||
-                                    combinaison_ligne_4(plateau.plateau, marque) ||
-                                    combinaison_colonne_4(plateau.plateau, marque)) {
-                                    
-                                    continuer = 1;
-
-                                    // Supprimer les combinaisons
-                                    supprim_combin(plateau.plateau, marque, compteur);
-
-                                    // Faire tomber et renouveler les cases
-                                    renouvellement_case(plateau.plateau);
-                                    
-                                    // Montrer les combinaisons
-                                    clrscr();
-                                    gotoxy(0, 0);
-                                    afficher_tab_symboles(plateau.plateau);
-                                    Sleep(500);
-                                    
-                                    // Supprimer
-                                    supprim_combin(plateau.plateau, marque, compteur);
-                                    
-                                    // Montrer les trous
-                                    clrscr();
-                                    gotoxy(0, 0);
-                                    afficher_tab_symboles(plateau.plateau);
-                                    Sleep(500);
-                                    
-                                    // Faire tomber et remplir
-                                    renouvellement_case(plateau.plateau);
-                                }
-                            }
+                            traiter_combinaisons_apres_mouvement(game, num_niveau);
                             
+                            // Vérifier si le contrat du niveau est rempli
+                            if (contrat_rempli(game)) {
+                                verifier_reussite_niveau(game, niveau_reussi);
+                                return;
+                            }
+
                             // Réinitialiser la sélection
                             s.selected = 0;
+
+                            // Sauvegarder la partie après chaque coup
+                            sauvegarder_partie(game);
                             
                         } else {
                             // Combinaison invalide - annuler
@@ -216,6 +303,82 @@ while (continuer) {
                 }
             }
             
+            if (touche == 'b' || touche == 'h' || touche == 'v' || touche == 'j' || s.selected == 'j') {
+                int item_pose = 0;
+                switch (touche) {
+                    case 'b':
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 0, 0, game->progression_items, game->inventaire);
+                        break;
+                    case 'h':
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 1, 0, game->progression_items, game->inventaire);
+                        break;
+                    case 'v':
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 2, 0, game->progression_items, game->inventaire);
+                        break;
+                    case 'j':
+                        s.selected = 'j'; // Indiquer sélection joker
+                        break;
+                    case '1':
+                    case '&':
+                        if (game->plateau[c.line][c.col] == 1 || game->plateau[c.line][c.col] >= 6) break;
+                        s.selected = 0;
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 1, game->progression_items, game->inventaire);
+                        traiter_combinaisons_apres_mouvement(game, num_niveau);
+                        break;
+                    case '2':
+                    case '\xE9':
+                        if (game->plateau[c.line][c.col] == 2 || game->plateau[c.line][c.col] >= 6) break;
+                        s.selected = 0;
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 2, game->progression_items, game->inventaire);
+                        traiter_combinaisons_apres_mouvement(game, num_niveau);
+                        break;
+                    case '3':
+                    case '"':
+                        if (game->plateau[c.line][c.col] == 3 || game->plateau[c.line][c.col] >= 6) break;
+                        s.selected = 0;
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 3, game->progression_items, game->inventaire);
+                        traiter_combinaisons_apres_mouvement(game, num_niveau);
+                        break;
+                    case '4':
+                    case '\'':
+                        if (game->plateau[c.line][c.col] == 4 || game->plateau[c.line][c.col] >= 6) break;
+                        s.selected = 0;
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 4, game->progression_items, game->inventaire);
+                        traiter_combinaisons_apres_mouvement(game, num_niveau);
+                        break;
+                    case '5':
+                    case '(':
+                        if (game->plateau[c.line][c.col] == 5 || game->plateau[c.line][c.col] >= 6) break;
+                        s.selected = 0;
+                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 5, game->progression_items, game->inventaire);
+                        traiter_combinaisons_apres_mouvement(game, num_niveau);
+                        break;
+                    default:
+                        break;
+                }
+                if (item_pose) {
+                    // Décrémenter le nombre de coups restants
+                    game->coups_restants--;
+                    // Montrer les trous
+                    clrscr();
+                    gotoxy(0, 0);
+                    afficher_tab_symboles(game->plateau);
+                    afficher_objectifs(game);
+                    pause_avec_temps(game, 500);
+                    // Faire tomber et renouveler les cases
+                    renouvellement_case(game->plateau);
+                    // Vérifier si le contrat du niveau est rempli
+                    if (contrat_rempli(game)) {
+                        verifier_reussite_niveau(game, niveau_reussi);
+                        return;
+                    }
+                    // Réinitialiser la sélection
+                    s.selected = 0;
+                    // Sauvegarder la partie après chaque coup
+                    sauvegarder_partie(game);
+                }
+            }
+
             // Effacer la ligne d'erreur
             gotoxy(0, LINE + 5);
             printf("                                              ");
@@ -223,9 +386,13 @@ while (continuer) {
         
         Sleep(50); // Petite pause pour ne pas surcharger le CPU
     }
-    
+
     show_cursor();
     clrscr();
+}
+
+void jouer_partie(GameState *game, int nouvelle) {
+    jouer_niveau(game->niveau, game, nouvelle);
 }
 
 // Fonction pour afficher le menu
@@ -265,6 +432,7 @@ int lire_regle_du_jeu() {
 // Programme principal
 int main() {
     int choix;
+    GameState game;
 
     do {
         afficher_menu();
@@ -279,11 +447,27 @@ int main() {
                 break;
 
             case 2: // 2 - Démarrer une nouvelle partie
-                jouer_niveau();
+                printf("Entrez votre pseudo : ");
+                scanf("%s", game.pseudo);
+                lancer_nouvelle_partie(&game);
+                jouer_partie(&game, 1); // nouvelle partie
                 break;
 
             case 3: // 3 - Reprendre une partie sauvegardée
-                printf("Fonctionnalite en construction...\n");
+                printf("Entrez votre pseudo : ");
+                scanf("%s", game.pseudo);   
+
+                if (charger_sauvegarde(&game) == 1) {
+                    printf("Sauvegarde chargee pour le joueur %s au niveau %d.\n", game.pseudo, game.niveau);
+                    Sleep(1000);
+                    jouer_partie(&game, 0); // reprendre partie
+                } 
+                else {
+                    printf("Aucune sauvegarde trouvee. Demarrage d'une nouvelle partie pour %s.\n", game.pseudo);
+                    Sleep(1000);
+                    lancer_nouvelle_partie(&game);
+                    jouer_partie(&game, 1); // nouvelle partie
+                }
                 Sleep(1500);
                 break;
 

@@ -1,12 +1,14 @@
 #include "moteur_de_jeu.h"
+#define NIV_EXT 2
 
 void supprimer_element(int plateau[LINE][COLUMN], int i, int j, int compteur_item[6]);
 // Supprime un élément du plateau et incrémente le compteur d'items correspondants 
 
-void placer_itembonus(int plateau[LINE][COLUMN], int ligne, int colonne, int typebonus, int orientation, int type, int compteur_item[6]);
+int placer_itembonus(int plateau[LINE][COLUMN], int ligne, int colonne, int typebonus, int type, int compteur_item[6], int inventaire[4]);
 // Place un objet bonus choisi sur une case choisie par le joueur
-// typebonus=1 : bombe
-// typebonus=2 : fusée
+// typebonus=0 : bombe
+// typebonus=1 : fusée horizontale
+// typebonus=2 : fusée verticale
 // typebonus=3 : joker
 
 void bombe(int plateau[LINE][COLUMN], int ligne, int colonne, int compteur_item[6]);
@@ -19,7 +21,6 @@ void fusee(int plateau[LINE][COLUMN], int ligne, int colonne, int orientation, i
 
 void joker(int plateau[LINE][COLUMN], int ligne, int colonne, int type); // ajout type
 // Remplace l'item d'une case choisie par le joueur par un item normal de son choix 
-
 
 int detecter_diagonale4(int plateau[LINE][COLUMN], int *ligne, int *colonne, int *orientation); //ajout orientation 1=vers droite 2=vers gauche
 // Détecte une diagonale de 4 items identiques et renvoie sa position via des pointeurs
@@ -49,3 +50,4 @@ void effet_extensions(int plateau_normalise[LINE][COLUMN], int plateau[LINE][COL
 // Détecte et applique les effets des combinaisons spéciales (diagonale4, carre2x2, ligne7)
 
 void normaliser_plateau(int src[LINE][COLUMN], int dst[LINE][COLUMN]);
+// Crée une version "normalisée" du plateau en remplaçant les items spéciaux par leur type de base

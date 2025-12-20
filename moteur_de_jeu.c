@@ -6,9 +6,9 @@
 #else
     #include "affichage_console_mac.h"
 #endif
-#include "moteur_de_jeu.h"
 #include "affichage_console.h"
 #include "extensions.h"
+#include "moteur_de_jeu.h"
 
 int blink = 0; // 0 ou 1, alternera à chaque rafraîchissement
 

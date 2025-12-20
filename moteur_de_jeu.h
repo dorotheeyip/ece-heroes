@@ -1,6 +1,6 @@
 #ifndef MOTEUR_DE_JEU_H
 #define MOTEUR_DE_JEU_H
-#define LINE 7   
+#define LINE 9 
 #define COLUMN 10
 
 typedef struct {

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "g_entree_user.h"
 #ifdef _WIN32
     #include "affichage_console.h"
 #else
@@ -8,6 +7,9 @@
 #include "moteur_de_jeu.h"
 #include "interface_console.h"
 #include "extensions.h"
+#include "moteur_de_jeu.h"  // Pour avoir accès à Plateau, LINE, COLUMN
+#include "nouvelle_partie.h" // Pour avoir accès à GameState
+#include "g_entree_user.h"
 
 // ---------------------------------------
 // Lire une touche (non bloquant)
@@ -123,7 +125,7 @@ int combinaison_valide(SelectionState s, GameState *game) {
     else if (combinaison_carre(plateau_normalise, marque)) resultat = 1;
     else if (combinaison_ligne_4(plateau_normalise, marque)) resultat = 1;
     else if (combinaison_colonne_4(plateau_normalise, marque)) resultat = 1;
-    else if (game->niveau >= 2 && detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation)) resultat = 1; // fun
+    else if (game->niveau >= NIV_EXT && detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation)) resultat = 1; // fun
 
     
     // 3️⃣ ANNULER LA PERMUTATION (on remet comme avant)
