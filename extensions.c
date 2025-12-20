@@ -3,9 +3,18 @@
 #include <time.h>
 #include "extensions.h"
 
-void supprimer_element(int plateau[LINE][COLUMN], int i, int j, int compteur_item[6]){
-    if (plateau[i][j]>=1 && plateau[i][j]<=5) compteur_item[plateau[i][j]]++;
-    plateau[i][j]=0;
+void supprimer_element(int plateau[LINE][COLUMN], int i, int j, int compteur_item[6]) {
+    int val = plateau[i][j];
+
+    if (val >= 1 && val <= 5) {
+        compteur_item[val]++;
+    }
+    else if (val >= 6 && val <= 10) {
+        compteur_item[val - 5]++;
+        plateau[i][j] = val - 5;
+        effet_item_ligne7(plateau, i, j, compteur_item); // 🔥 déclencher l'effet spécial ligne7
+    }
+    plateau[i][j] = 0;
 }
 
 void bombe(int plateau[LINE][COLUMN], int ligne, int colonne, int compteur_item[6]){
@@ -153,19 +162,25 @@ void effet_carre2x2(int plateau[LINE][COLUMN], int ligne, int colonne, int compt
     }
 }
 
-void effet_ligne7(int plateau[LINE][COLUMN], int ligne, int colonne, int orientation, int compteur_item[6]){ 
-    int special=plateau[ligne][colonne]+5;
-    if (orientation==1) {
-        for (int i=0; i<7; i++){
-            supprimer_element(plateau, ligne+i, colonne, compteur_item);
+void effet_ligne7(int plateau[LINE][COLUMN], int ligne, int colonne, int orientation, int compteur_item[6]) {
+    int type_original = plateau[ligne][colonne];
+    int special = type_original + 5;
+
+    if (orientation == 1) { // verticale
+        for (int i = 0; i < 7; i++) {
+            if (i != 3) { // NE PAS supprimer le centre
+                supprimer_element(plateau, ligne + i, colonne, compteur_item);
+            }
         }
-        plateau[ligne+3][colonne]=special; //verticale
+        plateau[ligne + 3][colonne] = special;
     }
-    else if (orientation==2) {
-        for (int j=0; j<7; j++){
-            supprimer_element(plateau, ligne, colonne+j, compteur_item);
+    else { // horizontale
+        for (int j = 0; j < 7; j++) {
+            if (j != 3) {
+                supprimer_element(plateau, ligne, colonne + j, compteur_item);
+            }
         }
-        plateau[ligne][colonne+3]=special; //horizontale
+        plateau[ligne][colonne + 3] = special;
     }
 }
 
@@ -176,9 +191,9 @@ void effet_item_ligne7(int plateau[LINE][COLUMN], int ligne, int colonne, int co
     effet_diagonale4(plateau, ligne, colonne, 2, compteur_item);
 }
 
-void effet_extensions(int plateau[LINE][COLUMN], int compteur_item[6]){
+void effet_extensions(int plateau_normalise[LINE][COLUMN], int plateau[LINE][COLUMN], int compteur_item[6]){
     int ligne, colonne, orientation;
-    int type=detecter_figures_speciales(plateau, &ligne, &colonne, &orientation);
+    int type=detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation);
     switch (type){
         case 1:
             effet_diagonale4(plateau, ligne, colonne, orientation, compteur_item);
@@ -191,5 +206,17 @@ void effet_extensions(int plateau[LINE][COLUMN], int compteur_item[6]){
             break;
         default:
             break;
+    }
+}
+
+void normaliser_plateau(int src[LINE][COLUMN], int dst[LINE][COLUMN]) {
+    for (int i = 0; i < LINE; i++) {
+        for (int j = 0; j < COLUMN; j++) {
+            int v = src[i][j];
+            if (v >= 6 && v <= 10)
+                dst[i][j] = v - 5;  // item spécial → type de base
+            else
+                dst[i][j] = v;
+        }
     }
 }

@@ -114,13 +114,17 @@ int combinaison_valide(SelectionState s, GameState *game) {
     int marque[LINE][COLUMN]={0};
     int ligne, colonne, orientation;
 
-    if (combinaison_ligne_6(tab, marque)) resultat = 1;
-    else if (combinaison_colonne_6(tab, marque)) resultat = 1;
-    else if (combinaison_croix(tab, marque)) resultat = 1;
-    else if (combinaison_carre(tab, marque)) resultat = 1;
-    else if (combinaison_ligne_4(tab, marque)) resultat = 1;
-    else if (combinaison_colonne_4(tab, marque)) resultat = 1;
-    else if (detecter_figures_speciales(tab, &ligne, &colonne, &orientation)) resultat = 1;
+    int plateau_normalise[LINE][COLUMN];
+    normaliser_plateau(tab, plateau_normalise);
+
+    if (combinaison_ligne_6(plateau_normalise, marque)) resultat = 1;
+    else if (combinaison_colonne_6(plateau_normalise, marque)) resultat = 1;
+    else if (combinaison_croix(plateau_normalise, marque)) resultat = 1;
+    else if (combinaison_carre(plateau_normalise, marque)) resultat = 1;
+    else if (combinaison_ligne_4(plateau_normalise, marque)) resultat = 1;
+    else if (combinaison_colonne_4(plateau_normalise, marque)) resultat = 1;
+    else if (game->niveau >= 2 && detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation)) resultat = 1; // fun
+
     
     // 3️⃣ ANNULER LA PERMUTATION (on remet comme avant)
     temp = tab[s.r1][s.c1];

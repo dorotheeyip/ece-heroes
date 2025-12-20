@@ -45,5 +45,7 @@ void effet_ligne7(int plateau[LINE][COLUMN], int ligne, int colonne, int orienta
 void effet_item_ligne7(int plateau[LINE][COLUMN], int ligne, int colonne, int compteur_item[6]);
 // Applique l'effet de destruction du carré 3x3 autour de la case de l'item spécial, des 2 diagonales et des lignes verticale et horizontale passant par cette case
 
-void effet_extensions(int plateau[LINE][COLUMN], int compteur_item[6]);
+void effet_extensions(int plateau_normalise[LINE][COLUMN], int plateau[LINE][COLUMN], int compteur_item[6]);
 // Détecte et applique les effets des combinaisons spéciales (diagonale4, carre2x2, ligne7)
+
+void normaliser_plateau(int src[LINE][COLUMN], int dst[LINE][COLUMN]);

@@ -63,6 +63,21 @@ void initialiser_niveau(GameState *game) {
         combinaison_colonne_4(game->plateau, marque) ||
         (game->niveau >= 2 && detecter_figures_speciales(game->plateau, &ligne, &colonne, &orientation)) // fun
     );
+    // int plateau_test[LINE][COLUMN] = {
+    // {1, 5, 3, 4, 5, 1, 2, 3, 4, 1},
+    // {2, 1, 5, 3, 2, 5, 1, 2, 3, 1},
+    // {3, 4, 1, 2, 5, 4, 1, 2, 3, 2},
+    // {5, 5, 5, 5, 1, 5, 5, 2, 3, 5}, // <- ligne 7 horizontale identique (item 5)
+    // {1, 2, 3, 5, 2, 2, 3, 4, 5, 2},
+    // {2, 3, 1, 5, 2, 1, 4, 3, 2, 1},
+    // {3, 4, 2, 3, 1, 2, 5, 1, 3, 4},
+    // };
+    // // Copier dans le plateau du jeu
+    // for(int i = 0; i < LINE; i++){
+    //     for(int j = 0; j < COLUMN; j++){
+    //         game->plateau[i][j] = plateau_test[i][j];
+    //     }
+    // }
 }
 
 int contrat_rempli(GameState *game) {

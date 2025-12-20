@@ -8,6 +8,9 @@
 #endif
 #include "moteur_de_jeu.h"
 #include "affichage_console.h"
+#include "extensions.h"
+
+int blink = 0; // 0 ou 1, alternera à chaque rafraîchissement
 
 // --------------------------------------------------------
 // Active les couleurs ANSI sous Windows
@@ -21,26 +24,66 @@ void activer_couleurs() {
 // --------------------------------------------------------
 void afficher_tab_symboles(int plateau[LINE][COLUMN]) {
     printf("\x1b[H");
+
     for (int i = 0; i < LINE; i++) {
         for (int j = 0; j < COLUMN; j++) {
-            char symbole;
-            int couleur;
-            switch (plateau[i][j]) {
-                case 1: symbole = '*'; couleur = LIGHTRED; break;
-                case 2: symbole = '^'; couleur = LIGHTGREEN; break;
-                case 3: symbole = '&'; couleur = YELLOW; break;
-                case 4: symbole = '+'; couleur = LIGHTCYAN; break;
-                case 5: symbole = '%'; couleur = LIGHTMAGENTA; break;
-                case 0: symbole = ' '; couleur = WHITE; break;
-                default: symbole = '?'; couleur = WHITE; break;
+
+            char symbole = ' ';
+            int couleur = WHITE;
+            int val = plateau[i][j];
+
+            if (val >= 1 && val <= 5) {
+                // Items normaux
+                switch (val) {
+                    case 1: symbole = '*'; couleur = LIGHTRED; break;
+                    case 2: symbole = '^'; couleur = LIGHTGREEN; break;
+                    case 3: symbole = '&'; couleur = YELLOW; break;
+                    case 4: symbole = '+'; couleur = LIGHTCYAN; break;
+                    case 5: symbole = '%'; couleur = LIGHTMAGENTA; break;
+                }
             }
+            else if (val >= 6 && val <= 10) {
+                // Items spéciaux ligne7
+                int type = val - 5;
+
+                switch (type) {
+                    case 1: symbole = '*'; break;
+                    case 2: symbole = '^'; break;
+                    case 3: symbole = '&'; break;
+                    case 4: symbole = '+'; break;
+                    case 5: symbole = '%'; break;
+                }
+
+                // Clignotement : alterne jaune / couleur normale
+                if (blink) {
+                    couleur = YELLOW;
+                } else {
+                    switch (type) { // couleur de base
+                        case 1: couleur = LIGHTRED; break;
+                        case 2: couleur = LIGHTGREEN; break;
+                        case 3: couleur = YELLOW; break;
+                        case 4: couleur = LIGHTCYAN; break;
+                        case 5: couleur = LIGHTMAGENTA; break;
+                    }
+                }
+            }
+            else {
+                symbole = ' ';
+                couleur = WHITE;
+            }
+
             text_color(couleur);
             printf("%c ", symbole);
         }
         printf("\n");
     }
+
     text_color(WHITE);
+
+    // Alterne blink pour le prochain rafraîchissement
+    blink = !blink;
 }
+
 
 // --------------------------------------------------------
 void afficher_tab(int plateau[LINE][COLUMN]){
@@ -199,7 +242,13 @@ void supprim_combin(int plateau[LINE][COLUMN], int marque[LINE][COLUMN], int com
             if(marque[i][j]){
                 int item = plateau[i][j];
                 if(item != 0){
-                    compteur[item]++;
+                    if (item >= 6 && item <= 10) {
+                        compteur[item - 5]++;
+                        plateau[i][j] = item - 5; // Remet l'item normal après comptage
+                        effet_item_ligne7(plateau, i, j, compteur);
+                    } else {
+                        compteur[item]++;
+                    }
                     plateau[i][j] = 0;
                 }
             }
