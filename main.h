@@ -1,4 +1,3 @@
-// Prototypes de fonctions
 void gerer_menu_apres_echec(GameState *game, int *niveau_echoue);
 
 void mettre_a_jour_affichage(GameState *game, Cursor c, SelectionState s);
