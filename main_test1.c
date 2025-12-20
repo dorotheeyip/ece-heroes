@@ -82,15 +82,23 @@ void traiter_combinaisons_apres_mouvement(GameState *game, int num_niveau) {
         }
         
         int ligne, colonne, orientation;
-        // Détecter et supprimer
-        if (combinaison_ligne_6(game->plateau, marque) ||
-            combinaison_colonne_6(game->plateau, marque) ||
-            combinaison_croix(game->plateau, marque) ||
-            combinaison_carre(game->plateau, marque) ||
-            combinaison_ligne_4(game->plateau, marque) ||
-            combinaison_colonne_4(game->plateau, marque) ||
-            (num_niveau >= 2 && detecter_figures_speciales(game->plateau, &ligne, &colonne, &orientation))) {  // fun
-            
+        // Détecter et supprimer        
+        int plateau_normalise[LINE][COLUMN];
+        normaliser_plateau(game->plateau, plateau_normalise);
+        
+        int type_special = 0;
+        if (num_niveau >= 2) { // fun
+            type_special = detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation);
+        }
+
+        if (type_special ||
+            combinaison_ligne_6(plateau_normalise, marque) ||
+            combinaison_colonne_6(plateau_normalise, marque) ||
+            combinaison_croix(plateau_normalise, marque) ||
+            combinaison_carre(plateau_normalise, marque) ||
+            combinaison_ligne_4(plateau_normalise, marque) ||
+            combinaison_colonne_4(plateau_normalise, marque)) {
+
             continuer = 1;
 
             // Montrer les combinaisons
@@ -99,10 +107,10 @@ void traiter_combinaisons_apres_mouvement(GameState *game, int num_niveau) {
             afficher_tab_symboles(game->plateau);
             afficher_objectifs(game);
             pause_avec_temps(game, 500);
-            
+
             if (num_niveau >= 2) { // fun
                 // Appliquer les effets des extensions
-                effet_extensions(game->plateau, compteur_item);
+                effet_extensions(plateau_normalise, game->plateau, compteur_item);
             }
 
             // Supprimer les combinaisons
