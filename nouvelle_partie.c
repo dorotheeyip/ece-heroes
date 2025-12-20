@@ -127,7 +127,7 @@ void initialiser_niveau(GameState *game) {
         combinaison_carre(game->plateau, marque) ||
         combinaison_ligne_4(game->plateau, marque) ||
         combinaison_colonne_4(game->plateau, marque) ||
-        (game->niveau >= NIV_EXT && detecter_figures_speciales(game->plateau, &ligne, &colonne, &orientation)) // fun
+        (game->niveau >= NIV_EXT && detecter_figures_speciales(game->plateau, &ligne, &colonne, &orientation)) 
     );
     // int plateau_test[LINE][COLUMN] = {
     // {1, 5, 3, 4, 5, 1, 2, 3, 4, 1},
@@ -155,7 +155,7 @@ int contrat_rempli(GameState *game) {
 }
 
 void afficher_objectifs(GameState *game) {
-    if (game->niveau >= NIV_EXT) { // fun
+    if (game->niveau >= NIV_EXT) { 
         gotoxy(0, LINE + 9);
     } else {
         gotoxy(0, LINE + 6);

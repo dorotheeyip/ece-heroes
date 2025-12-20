@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include "extensions.h"
+#include "g_entree_user.h"
+#include "nouvelle_partie.h"
+#include "main.h"
+#include "sauvegarde.h"
+#ifdef _WIN32
+    #include "affichage_console.h"
+#else
+    #include "affichage_console_mac.h"
+#endif
 
 void supprimer_element(int plateau[LINE][COLUMN], int i, int j, int compteur_item[6]) {
     int val = plateau[i][j];
@@ -231,4 +240,77 @@ void normaliser_plateau(int src[LINE][COLUMN], int dst[LINE][COLUMN]) {
                 dst[i][j] = v;
         }
     }
+}
+
+// Gère la saisie des objets depuis l'interface utilisateur
+int utiliser_objet(GameState *game, Cursor *c, SelectionState *s, int touche, int num_niveau, int niveau_reussi) {
+    int item_pose = 0;
+    switch (touche) {
+        case 'b':
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 0, 0, game->progression_items, game->inventaire);
+            break;
+        case 'h':
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 1, 0, game->progression_items, game->inventaire);
+            break;
+        case 'v':
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 2, 0, game->progression_items, game->inventaire);
+            break;
+        case 'j':
+            s->selected = 'j'; // Indiquer sélection joker
+            break;
+        case '1':
+            if (game->plateau[c->line][c->col] == 1 || game->plateau[c->line][c->col] >= 6) break;
+            s->selected = 0;
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 3, 1, game->progression_items, game->inventaire);
+            traiter_combinaisons_apres_mouvement(game, num_niveau);
+            break;
+        case '2':
+            if (game->plateau[c->line][c->col] == 2 || game->plateau[c->line][c->col] >= 6) break;
+            s->selected = 0;
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 3, 2, game->progression_items, game->inventaire);
+            traiter_combinaisons_apres_mouvement(game, num_niveau);
+            break;
+        case '3':
+            if (game->plateau[c->line][c->col] == 3 || game->plateau[c->line][c->col] >= 6) break;
+            s->selected = 0;
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 3, 3, game->progression_items, game->inventaire);
+            traiter_combinaisons_apres_mouvement(game, num_niveau);
+            break;
+        case '4':
+            if (game->plateau[c->line][c->col] == 4 || game->plateau[c->line][c->col] >= 6) break;
+            s->selected = 0;
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 3, 4, game->progression_items, game->inventaire);
+            traiter_combinaisons_apres_mouvement(game, num_niveau);
+            break;
+        case '5':
+            if (game->plateau[c->line][c->col] == 5 || game->plateau[c->line][c->col] >= 6) break;
+            s->selected = 0;
+            item_pose = placer_itembonus(game->plateau, c->line, c->col, 3, 5, game->progression_items, game->inventaire);
+            traiter_combinaisons_apres_mouvement(game, num_niveau);
+            break;
+        default:
+            break;
+    }
+    if (item_pose) {
+        // Décrémenter le nombre de coups restants
+        game->coups_restants--;
+        // Montrer les trous
+        clrscr();
+        gotoxy(0, 0);
+        afficher_tab_symboles(game->plateau);
+        afficher_objectifs(game);
+        pause_avec_temps(game, 500);
+        // Faire tomber et renouveler les cases
+        renouvellement_case(game->plateau);
+        // Vérifier si le contrat du niveau est rempli
+        if (contrat_rempli(game)) {
+            verifier_reussite_niveau(game, niveau_reussi);
+            return 1;
+        }
+        // Réinitialiser la sélection
+        s->selected = 0;
+        // Sauvegarder la partie après chaque coup
+        sauvegarder_partie(game);
+    }
+    return 0;
 }

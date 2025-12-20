@@ -58,7 +58,7 @@ void mettre_a_jour_affichage(GameState *game, Cursor c, SelectionState s) {
     gotoxy(0, LINE + 4);
 
     printf("ZQSD ou Fleches = Deplacer | ESPACE = Selectionner | ECHAP = Quitter\n");
-    if (game->niveau >= NIV_EXT) { // fun
+    if (game->niveau >= NIV_EXT) { 
         printf("\n=== Objets ===\nB = bombe (%d/%d) | H = fusee horizontale (%d/%d) | V = fusee verticale (%d/%d) | J = joker (%d/%d)\n", game->inventaire[0], game->inventaire_max[0], game->inventaire[1], game->inventaire_max[1], game->inventaire[2], game->inventaire_max[2], game->inventaire[3], game->inventaire_max[3]);
         if (s.selected == 'j') {
             printf("JOKER: Remplace la selection par ");
@@ -96,7 +96,7 @@ void traiter_combinaisons_apres_mouvement(GameState *game, int num_niveau) {
         normaliser_plateau(game->plateau, plateau_normalise);
         
         int type_special = 0;
-        if (num_niveau >= NIV_EXT) { // fun
+        if (num_niveau >= NIV_EXT) { 
             type_special = detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation);
         }
 
@@ -117,7 +117,7 @@ void traiter_combinaisons_apres_mouvement(GameState *game, int num_niveau) {
             afficher_objectifs(game);
             pause_avec_temps(game, 500);
 
-            if (num_niveau >= NIV_EXT) { // fun
+            if (num_niveau >= NIV_EXT) { 
                 // Appliquer les effets des extensions
                 effet_extensions(plateau_normalise, game->plateau, compteur_item);
             }
@@ -175,6 +175,8 @@ void verifier_reussite_niveau(GameState *game, int niveau_reussi) {
     // Retour menu principal
     return;
 }
+
+// (l'implémentation de la gestion d'objets a été déplacée vers extensions.c)
 
 // Fonction principale du jeu
 void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
@@ -303,80 +305,8 @@ void jouer_niveau(int num_niveau, GameState *game, int reinitialiser) {
                 }
             }
             
-            if (touche == 'b' || touche == 'h' || touche == 'v' || touche == 'j' || s.selected == 'j') {
-                int item_pose = 0;
-                switch (touche) {
-                    case 'b':
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 0, 0, game->progression_items, game->inventaire);
-                        break;
-                    case 'h':
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 1, 0, game->progression_items, game->inventaire);
-                        break;
-                    case 'v':
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 2, 0, game->progression_items, game->inventaire);
-                        break;
-                    case 'j':
-                        s.selected = 'j'; // Indiquer sélection joker
-                        break;
-                    case '1':
-                    case '&':
-                        if (game->plateau[c.line][c.col] == 1 || game->plateau[c.line][c.col] >= 6) break;
-                        s.selected = 0;
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 1, game->progression_items, game->inventaire);
-                        traiter_combinaisons_apres_mouvement(game, num_niveau);
-                        break;
-                    case '2':
-                    case '\xE9':
-                        if (game->plateau[c.line][c.col] == 2 || game->plateau[c.line][c.col] >= 6) break;
-                        s.selected = 0;
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 2, game->progression_items, game->inventaire);
-                        traiter_combinaisons_apres_mouvement(game, num_niveau);
-                        break;
-                    case '3':
-                    case '"':
-                        if (game->plateau[c.line][c.col] == 3 || game->plateau[c.line][c.col] >= 6) break;
-                        s.selected = 0;
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 3, game->progression_items, game->inventaire);
-                        traiter_combinaisons_apres_mouvement(game, num_niveau);
-                        break;
-                    case '4':
-                    case '\'':
-                        if (game->plateau[c.line][c.col] == 4 || game->plateau[c.line][c.col] >= 6) break;
-                        s.selected = 0;
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 4, game->progression_items, game->inventaire);
-                        traiter_combinaisons_apres_mouvement(game, num_niveau);
-                        break;
-                    case '5':
-                    case '(':
-                        if (game->plateau[c.line][c.col] == 5 || game->plateau[c.line][c.col] >= 6) break;
-                        s.selected = 0;
-                        item_pose = placer_itembonus(game->plateau, c.line, c.col, 3, 5, game->progression_items, game->inventaire);
-                        traiter_combinaisons_apres_mouvement(game, num_niveau);
-                        break;
-                    default:
-                        break;
-                }
-                if (item_pose) {
-                    // Décrémenter le nombre de coups restants
-                    game->coups_restants--;
-                    // Montrer les trous
-                    clrscr();
-                    gotoxy(0, 0);
-                    afficher_tab_symboles(game->plateau);
-                    afficher_objectifs(game);
-                    pause_avec_temps(game, 500);
-                    // Faire tomber et renouveler les cases
-                    renouvellement_case(game->plateau);
-                    // Vérifier si le contrat du niveau est rempli
-                    if (contrat_rempli(game)) {
-                        verifier_reussite_niveau(game, niveau_reussi);
-                        return;
-                    }
-                    // Réinitialiser la sélection
-                    s.selected = 0;
-                    // Sauvegarder la partie après chaque coup
-                    sauvegarder_partie(game);
-                }
+            if (utiliser_objet(game, &c, &s, touche, num_niveau, niveau_reussi)) {
+                return;
             }
 
             // Effacer la ligne d'erreur

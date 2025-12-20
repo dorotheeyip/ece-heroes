@@ -1,4 +1,6 @@
 #include "moteur_de_jeu.h"
+#include "nouvelle_partie.h"
+#include "g_entree_user.h"
 #define NIV_EXT 2
 
 void supprimer_element(int plateau[LINE][COLUMN], int i, int j, int compteur_item[6]);
@@ -51,3 +53,6 @@ void effet_extensions(int plateau_normalise[LINE][COLUMN], int plateau[LINE][COL
 
 void normaliser_plateau(int src[LINE][COLUMN], int dst[LINE][COLUMN]);
 // Crée une version "normalisée" du plateau en remplaçant les items spéciaux par leur type de base
+
+int utiliser_objet(GameState *game, Cursor *c, SelectionState *s, int touche, int num_niveau, int niveau_reussi);
+// Gère la saisie des objets depuis l'interface utilisateur

@@ -125,7 +125,7 @@ int combinaison_valide(SelectionState s, GameState *game) {
     else if (combinaison_carre(plateau_normalise, marque)) resultat = 1;
     else if (combinaison_ligne_4(plateau_normalise, marque)) resultat = 1;
     else if (combinaison_colonne_4(plateau_normalise, marque)) resultat = 1;
-    else if (game->niveau >= NIV_EXT && detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation)) resultat = 1; // fun
+    else if (game->niveau >= NIV_EXT && detecter_figures_speciales(plateau_normalise, &ligne, &colonne, &orientation)) resultat = 1; 
 
     
     // 3️⃣ ANNULER LA PERMUTATION (on remet comme avant)
