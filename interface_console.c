@@ -27,7 +27,7 @@ void afficher_item_selec(int row, int col, int item) {
     gotoxy(col, row);
     
     if (item >= 0 && item <= 6) {
-        putchar(symboles[item]);  // <-- putchar n'a pas de problème avec %
+        putchar(symboles[item]);
         putchar(' ');
     }
     
